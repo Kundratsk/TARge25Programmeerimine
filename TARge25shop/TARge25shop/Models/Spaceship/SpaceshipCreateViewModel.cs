@@ -1,8 +1,6 @@
-﻿
-
-namespace TARge25shop.Core.Domain
+﻿namespace TARge25shop.Models.Spaceship
 {
-    public class SpaceshipDto
+    public class SpaceshipCreateViewModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
