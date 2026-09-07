@@ -6,6 +6,8 @@ namespace TARge25shop.Data
     public class TARge25ShopContext : DbContext
     {
         //All on konstruktor, mis pärib DbContext klassi
-        public TARge25ShopContext (DbContextOptions<TARge25ShopContext> options) : base(options){ }
+        public TARge25ShopContext (DbContextOptions<TARge25ShopContext> options) 
+            : base(options){ }
+    
     }
 }
