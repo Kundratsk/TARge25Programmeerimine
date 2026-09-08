@@ -24,13 +24,13 @@ namespace TARge25shop.ApplicationServices.Services
 
             Spaceship spaceShip = new();
 
-            spaceShip.Id = dto.Id;
+            spaceShip.Id = Guid.NewGuid();
             spaceShip.Name = dto.Name;
             spaceShip.ShipType = dto.ShipType;
             spaceShip.Crew = dto.Crew;
             spaceShip.EnginePower = dto.EnginePower;
-            spaceShip.CreatedAt = dto.CreatedAt;
-            spaceShip.UpdatedAt = dto. UpdatedAt;
+            spaceShip.CreatedAt = DateTime.Now;
+            spaceShip.UpdatedAt = DateTime.Now;
 
             //andmete salvestamine andmebaasi
 

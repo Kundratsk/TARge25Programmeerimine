@@ -1,3 +1,8 @@
+using TARge25shop.ApplicationServices.Services;
+using TARge25shop.Core.ServiceInterface;
+using TARge25shop.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace TARge25Shop
 {
     public class Program
@@ -8,6 +13,10 @@ namespace TARge25Shop
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<TARge25ShopContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddScoped<ISpaceshipServices, SpaceshipServices>();
+            
 
             var app = builder.Build();
 
@@ -29,6 +38,12 @@ namespace TARge25Shop
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<TARge25ShopContext>();
+                dbContext.Database.EnsureCreated();
+            }
 
             app.Run();
         }
