@@ -34,6 +34,7 @@ namespace TARge25shop.Controllers
                     Name = x.Name,
                     ShipType = x.ShipType,
                     CreatedAt = x.CreatedAt,
+                    EnginePower = x.EnginePower,
                     Crew = x.Crew
                 });
 
@@ -93,7 +94,6 @@ namespace TARge25shop.Controllers
         
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(SpaceshipUpdateViewModel vm)
         {
             var dto = new SpaceshipDto
