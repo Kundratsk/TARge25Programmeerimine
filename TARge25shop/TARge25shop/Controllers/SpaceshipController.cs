@@ -114,5 +114,9 @@ namespace TARge25shop.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            return View();
+        } 
     }
 }
