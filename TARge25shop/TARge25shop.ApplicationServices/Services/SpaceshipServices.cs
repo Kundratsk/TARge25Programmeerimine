@@ -1,4 +1,6 @@
-﻿using TARge25shop.Core.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
+using TARge25shop.Core.Domain;
 using TARge25shop.Core.Dto;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
@@ -39,6 +41,34 @@ namespace TARge25shop.ApplicationServices.Services
 
 
             return spaceShip;
+        }
+        public async Task<Spaceship> Update(SpaceshipDto dto)
+        {
+            var domain = await _context.Spaceships
+                .SingleOrDefaultAsync(x => x.Id == dto.Id);
+
+            if (domain == null)
+            {
+                return null;
+            }
+
+            domain.Name = dto.Name;
+            domain.ShipType = dto.ShipType;
+            domain.Crew = dto.Crew;
+            domain.EnginePower = dto.EnginePower;
+            domain.UpdatedAt = DateTime.Now;
+        
+        _context.Spaceships.Update(domain);
+        await _context.SaveChangesAsync();
+
+        return domain;
+        }
+        public async Task<Spaceship> DetailAsync(Guid id)
+        {
+            var spaceship = await _context.Spaceships
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return spaceship;
         }
     }
 }

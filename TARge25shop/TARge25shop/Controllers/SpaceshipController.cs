@@ -69,5 +69,50 @@ namespace TARge25shop.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            // OTSIME laeva andmed (asenda .GetAsync vajadusel oma teenuse otsingumeetodi nimega)
+            var spaceship = await _spaceshipServices.DetailAsync(id);
+
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new SpaceshipUpdateViewModel
+            {
+                Id = spaceship.Id,
+                Name = spaceship.Name,
+                ShipType = spaceship.ShipType,
+                Crew = spaceship.Crew,
+                EnginePower = spaceship.EnginePower
+            };
+
+            return View(vm);
+        
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(SpaceshipUpdateViewModel vm)
+        {
+            var dto = new SpaceshipDto
+            {
+                Id = vm.Id,
+                Name = vm.Name,
+                ShipType = vm.ShipType,
+                Crew = vm.Crew,
+                EnginePower = vm.EnginePower
+            };
+
+            var result = await _spaceshipServices.Update(dto);
+
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
