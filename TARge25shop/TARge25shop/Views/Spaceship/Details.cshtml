@@ -1,0 +1,41 @@
+﻿@model TARge25shop.Models.Spaceship.SpaceshipDetailsViewModel
+
+@{
+    ViewData["Title"] = "Kosmoselaeva andmed";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h2 class="mb-0">🚀 Kosmoselaeva üksikasjad: @Model.Name</h2>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 font-weight-bold">ID:</dt>
+                <dd class="col-sm-9 text-muted">@Model.Id</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Nimi:</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Tüüp:</dt>
+                <dd class="col-sm-9">@Model.ShipType</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Mootori võimsus:</dt>
+                <dd class="col-sm-9">@Model.EnginePower kW</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Meeskond:</dt>
+                <dd class="col-sm-9">@Model.Crew liiget</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Tehtud:</dt>
+                <dd class="col-sm-9">@Model.CreatedAt</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Uuendatud:</dt>
+                <dd class="col-sm-9">@Model.UpdatedAt</dd>
+            </dl>
+        </div>
+        <div class="card-footer bg-light d-flex gap-2">
+            <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning">Muuda andmeid</a>
+            <a asp-action="Index" class="btn btn-secondary">Tagasi nimekirja</a>
+        </div>
+    </div>
+</div>
