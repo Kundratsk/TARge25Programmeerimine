@@ -114,9 +114,39 @@ namespace TARge25shop.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return View();
-        } 
+            var spaceship = await _spaceshipServices.DetailAsync(id);
+            
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new SpaceshipDeleteViewModel
+            {
+                Id = spaceship.Id,
+                Name = spaceship.Name,
+                ShipType = spaceship.ShipType,
+                Crew = spaceship.Crew,
+                EnginePower = spaceship.EnginePower
+            };
+
+            return View(vm);
+        }
+        [HttpPost, ActionName("DeleteConfirmed")]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            // Kutsume teenuse välja, et kosmoselaev andmebaasist kustutada
+            var spaceship = await _spaceshipServices.Delete(id);
+
+            if (spaceship == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
