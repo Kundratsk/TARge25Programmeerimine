@@ -16,7 +16,8 @@ namespace TARge25Shop
             builder.Services.AddDbContext<TARge25ShopContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<ISpaceshipServices, SpaceshipServices>();
-            
+            builder.Services.AddScoped<IKindergartenServices, KindergartenServices>();
+
 
             var app = builder.Build();
 
@@ -42,7 +43,7 @@ namespace TARge25Shop
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<TARge25ShopContext>();
-                dbContext.Database.EnsureCreated();
+                dbContext.Database.Migrate();
             }
 
             app.Run();
