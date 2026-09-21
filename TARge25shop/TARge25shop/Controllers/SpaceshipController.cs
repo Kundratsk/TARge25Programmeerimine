@@ -57,8 +57,19 @@ namespace TARge25shop.Controllers
                 Name = vm.Name,
                 ShipType = vm.ShipType,
                 Crew = vm.Crew,
-                EnginePower = vm.EnginePower
+                EnginePower = vm.EnginePower,
+                //failide edasiandmine dto-le
+                Files = vm.Files,
+                FileToApiDtos = vm.Image
+                    .Select(x => new FileToApiDto
+                    {
+                        Id = x.ImageId,
+                        ExistingFilePath = x.FilePath,
+                        SpaceshipId = x.SpaceshipId
+                    }).ToArray()
             };
+
+
 
             //Nüüd kutsume teenuse välja, et luua uus kosmoselaev. See on asünkroonne tegevus ja kasutame await
 
