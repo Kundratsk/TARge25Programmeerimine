@@ -27,10 +27,13 @@
     </thead>
 
     <tbody>
+        @{
+            short nr = 1;
+        }
         @foreach (var item in Model)
         {
             <tr>
-                <td></td>
+                <td>@nr</td>
                 <td>@item.GroupName</td>
                 <td>@item.KindergartenName</td>
                 <td>@item.ChildrenCount</td>
@@ -64,6 +67,7 @@
                     </a>
                 </td>
             </tr>
+            nr++;
         }
     </tbody>
 </table>
