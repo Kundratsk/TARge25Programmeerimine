@@ -50,5 +50,60 @@ namespace TARge25Shop.SpaceshipTest
             // Kontroll
             Assert.NotEqual(wrongGuid, goodGuid);
         }
+        [Fact]
+        public async Task Should_GetSpaceshipById_WhenGuidIsEqual()
+        {
+            //ülesseade
+            Guid databaseGuid = Guid.Parse("b6b40e73-7c22-457d-abd4-8fb634d6c853");
+            Guid seekGuid = Guid.Parse("b6b40e73-7c22-457d-abd4-8fb634d6c853");
+
+            //tegevus
+            await Svc<ISpaceshipServices>().DetailAsync(seekGuid);
+        
+            //kontroll
+            Assert.Equal(databaseGuid,seekGuid);
+
+        }
+        [Fact]
+        public async Task Should_SpaceshipDeletedById_WhenReturnedResultIsEqual()
+        {
+            // ülesseade
+            SpaceshipDto dto = MockSpaceshipData();
+
+            //tegevus
+            var addSpaceship = await Svc<ISpaceshipServices>().Create(dto);
+            var deleteSpaceship = await Svc<ISpaceshipServices>().Delete((Guid)addSpaceship.Id);
+
+            //kontroll
+            Assert.Equal(addSpaceship.Id, deleteSpaceship.Id);
+        }
+
+        private SpaceshipDto MockSpaceshipData(bool isOneOrTwo = false)
+        {
+            if (isOneOrTwo == false)
+            {
+                return new SpaceshipDto
+                {
+                    Name = "Melon Musk",
+                    ShipType = "uhvo",
+                    Crew = 666,
+                    EnginePower = 10,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+            }
+            else
+            {
+                return new SpaceshipDto
+                {
+                    Name = "Melman Kask",
+                    ShipType = "Talderk",
+                    Crew = 6644,
+                    EnginePower = 11,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+            }
+        }
     }
 }
