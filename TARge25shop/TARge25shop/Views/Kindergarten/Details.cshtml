@@ -41,14 +41,14 @@
             Created At
         </dt>
         <dd class="col-sm-9">
-            @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+            @Model.CreatedAt
         </dd>
 
         <dt class="col-sm-3">
             Updated At
         </dt>
         <dd class="col-sm-9">
-            @Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+            @Model.UpdatedAt
         </dd>
 
     </dl>
@@ -57,7 +57,7 @@
 <a asp-action="Update"
    asp-route-id="@Model.Id"
    class="btn btn-warning">
-    Edit
+    Update
 </a>
 
 <a asp-action="Index"
