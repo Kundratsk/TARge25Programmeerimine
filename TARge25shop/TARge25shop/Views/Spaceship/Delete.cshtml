@@ -18,6 +18,10 @@
         <dt class="col-sm-2">Engine Power</dt>
         <dd class="col-sm-10">@Model.EnginePower</dd>
     </dl>
+    @foreach (var images in Model.Image)
+    {
+        <partial name="_Images" model="images" />
+    }
 
     <form asp-action="DeleteConfirmed" asp-controller="spaceship" asp-route-id="@Model.Id" method="post">
         <button type="submit" class="btn btn-danger">Delete</button>
