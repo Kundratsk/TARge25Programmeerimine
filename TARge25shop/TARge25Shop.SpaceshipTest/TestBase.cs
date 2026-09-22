@@ -22,7 +22,12 @@ namespace TARge25Shop.SpaceshipTest
         {
             var services = new ServiceCollection();
             SetupServices(services);
+            serviceProvider = services.BuildServiceProvider();
         }
+        // Seame üles testide läbiviimiseks vajalikud teenused mujalt projektist
+        // See meetod annab ka mälusoleva andmebaasi mida testideks kasutada,
+        // toimib kui program.cs-i sisu testide jooksutamiseks, ent lühidal kujul
+        // tühi ServiceCollection-tüüpi muutuja kuhu asetame teenused
 
         public virtual void SetupServices(ServiceCollection services)
         {
@@ -34,6 +39,7 @@ namespace TARge25Shop.SpaceshipTest
                 x =>
                 {
                     x.UseInMemoryDatabase("TEST");
+                    //vaigistame errorid (kui adnmebaasi CRUD ei toimi, siis DB errorit ei anna)
                     x.ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
                 }
                 );
