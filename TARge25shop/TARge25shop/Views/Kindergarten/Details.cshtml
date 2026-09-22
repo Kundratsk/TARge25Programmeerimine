@@ -1,0 +1,66 @@
+﻿@model TARge25shop.Models.Kindergarten.KindergartenDetailsViewModel
+
+@{
+    ViewData["Title"] = "Kindergarten Details";
+}
+
+<h1>Kindergarten Details</h1>
+
+<div>
+    <dl class="row">
+
+        <dt class="col-sm-3">
+            Group Name
+        </dt>
+        <dd class="col-sm-9">
+            @Model.GroupName
+        </dd>
+
+        <dt class="col-sm-3">
+            Kindergarten Name
+        </dt>
+        <dd class="col-sm-9">
+            @Model.KindergartenName
+        </dd>
+
+        <dt class="col-sm-3">
+            Children Count
+        </dt>
+        <dd class="col-sm-9">
+            @Model.ChildrenCount
+        </dd>
+
+        <dt class="col-sm-3">
+            Teacher Name
+        </dt>
+        <dd class="col-sm-9">
+            @Model.TeacherName
+        </dd>
+
+        <dt class="col-sm-3">
+            Created At
+        </dt>
+        <dd class="col-sm-9">
+            @Model.CreatedAt
+        </dd>
+
+        <dt class="col-sm-3">
+            Updated At
+        </dt>
+        <dd class="col-sm-9">
+            @Model.UpdatedAt
+        </dd>
+
+    </dl>
+</div>
+
+<a asp-action="Update"
+   asp-route-id="@Model.Id"
+   class="btn btn-warning">
+    Update
+</a>
+
+<a asp-action="Index"
+   class="btn btn-secondary">
+    Back
+</a>
