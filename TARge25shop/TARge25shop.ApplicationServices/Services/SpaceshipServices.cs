@@ -81,6 +81,21 @@ namespace TARge25shop.ApplicationServices.Services
             var result = await _context.Spaceships
                 .FirstOrDefaultAsync(x => x.Id == id);
 
+            //var images muutuja alt otsib ülesse pildid
+            //ja kutsub välja removeImagesFromApi meetodi
+
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(y => new FileToApiDto
+                {
+                    Id = y.Id,
+                    SpaceshipId = y.SpaceshipId,
+                    ExistingFilePath = y.ExistingFilePath
+
+                }).ToArrayAsync();
+
+            await _fileServices.RemoveImagesFromApi(images);
+
             _context.Spaceships.Remove(result);
             await _context.SaveChangesAsync();
 

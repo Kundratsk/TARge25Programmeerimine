@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="ServicesInterface\" />
+    <Folder Include="wwwroot\multipleFileUpload\" />
   </ItemGroup>
 
   <ItemGroup>

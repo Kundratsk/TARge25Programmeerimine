@@ -72,5 +72,32 @@ namespace TARge25shop.ApplicationServices.Services
 
             return null;
         }
+
+        // <List<FileToApi>> List lisati sellepärast, et tegemist on listiga ehk pilte on mitu
+        public async Task<List<FileToApi>> RemoveImagesFromApi(FileToApiDto[] dtos)
+        {
+
+            foreach(var dto in dtos)
+            {
+                var imageId = await _context.FileToApis
+                            .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+                var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"
+                + imageId.ExistingFilePath;
+
+                        //kui fail asub selles kaustas, siis kustuta
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                _context.FileToApis.Remove(imageId);
+                
+            }
+            await _context.SaveChangesAsync();
+
+            return null;
+        }
     }
 }
