@@ -129,8 +129,15 @@ namespace TARge25shop.Controllers
                 Name = vm.Name,
                 ShipType = vm.ShipType,
                 Crew = vm.Crew,
-                EnginePower = vm.EnginePower
-
+                EnginePower = vm.EnginePower,
+                Files = vm.Files,
+                FileToApiDtos = vm.Images
+                    .Select(x => new FileToApiDto
+                    {
+                        Id = x.ImageId,
+                        ExistingFilePath = x.FilePath,
+                        SpaceshipId = x.SpaceshipId
+                    }).ToArray()
             };
 
             var result = await _spaceshipServices.Update(dto);

@@ -62,7 +62,7 @@ namespace TARge25shop.ApplicationServices.Services
             domain.EnginePower = dto.EnginePower;
             domain.UpdatedAt = DateTime.Now;
             //lisame juurde piltide update
-            
+            _fileServices.FilesToApi(dto, domain);
 
             _context.Spaceships.Update(domain);
         await _context.SaveChangesAsync();
