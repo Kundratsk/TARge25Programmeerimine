@@ -61,8 +61,10 @@ namespace TARge25shop.ApplicationServices.Services
             domain.Crew = dto.Crew;
             domain.EnginePower = dto.EnginePower;
             domain.UpdatedAt = DateTime.Now;
-        
-        _context.Spaceships.Update(domain);
+            //lisame juurde piltide update
+            
+
+            _context.Spaceships.Update(domain);
         await _context.SaveChangesAsync();
 
         return domain;

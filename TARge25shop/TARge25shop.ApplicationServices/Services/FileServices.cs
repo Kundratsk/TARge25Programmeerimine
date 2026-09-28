@@ -3,6 +3,8 @@ using TARge25shop.Core.Domain;
 using TARge25shop.Core.Dto;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace TARge25shop.ApplicationServices.Services
 {
@@ -49,6 +51,26 @@ namespace TARge25shop.ApplicationServices.Services
                     }
                 }
             }
+        }
+
+        public async Task<FileToApi>RemoveImageFromApi(FileToApiDto dto)
+        {
+            var imageId = await _context.FileToApis
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+            var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"
+                + imageId.ExistingFilePath;
+
+            //kui fail asub selles kaustas, siis kustuta
+
+            if (File.Exists(filePath)) {
+                File.Delete(filePath);
+            }
+
+            _context.FileToApis.Remove(imageId);
+            await _context.SaveChangesAsync();
+
+            return null;
         }
     }
 }
