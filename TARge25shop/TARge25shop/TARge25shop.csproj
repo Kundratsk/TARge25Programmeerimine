@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Realestate\" />
     <Folder Include="ServicesInterface\" />
     <Folder Include="wwwroot\multipleFileUpload\" />
   </ItemGroup>

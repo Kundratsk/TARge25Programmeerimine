@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TARge25shop.Core.Domain
+﻿namespace TARge25shop.Models.Realestate
 {
-    public class Realestate
+    public class RealestateIndexViewModel
     {
         public Guid? Id { get; set; }
         public double? Area { get; set; }
