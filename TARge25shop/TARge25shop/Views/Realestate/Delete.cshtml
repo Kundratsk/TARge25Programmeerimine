@@ -1,5 +1,28 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model TARge25shop.Models.Realestate.RealestateDeleteViewModel
+
+<div class="container mt-4">
+    <div class="alert alert-danger">
+        <h3>Kas oled kindel, et soovid selle objekti kustutada?</h3>
+    </div>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">Pindala:</dt>
+        <dd class="col-sm-9">@Model.Area m²</dd>
+
+        <dt class="col-sm-3">Asukoht:</dt>
+        <dd class="col-sm-9">@Model.Location</dd>
+
+        <dt class="col-sm-3">Tubade arv:</dt>
+        <dd class="col-sm-9">@Model.RoomNumber</dd>
+
+        <dt class="col-sm-3">Hoonetüüp:</dt>
+        <dd class="col-sm-9">@Model.BuildingType</dd>
+    </dl>
+
+    <form asp-action="DeleteConfirmed" asp-controller="Realestate" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Jah, kustuta</button>
+        <a asp-action="Index" asp-controller="Realestate" class="btn btn-secondary">Tühista</a>
+    </form>
+</div>

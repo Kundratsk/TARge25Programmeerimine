@@ -1,5 +1,25 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model TARge25shop.Models.Realestate.RealestateDetailsViewModel
+
+<div class="container mt-4">
+    <h2>Kinnisvara üksikasjad</h2>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">Asukoht:</dt>
+        <dd class="col-sm-9">@Model.Location</dd>
+
+        <dt class="col-sm-3">Pindala:</dt>
+        <dd class="col-sm-9">@Model.Area m²</dd>
+
+        <dt class="col-sm-3">Tubade arv:</dt>
+        <dd class="col-sm-9">@Model.RoomNumber</dd>
+
+        <dt class="col-sm-3">Hoonetüüp:</dt>
+        <dd class="col-sm-9">@Model.BuildingType</dd>
+    </dl>
+
+    <div class="mt-4">
+        <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary">Muuda</a>
+        <a asp-action="Index" class="btn btn-secondary">Tagasi nimekirja</a>
+    </div>
+</div>

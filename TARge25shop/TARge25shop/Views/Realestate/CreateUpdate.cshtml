@@ -1,5 +1,62 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model TARge25shop.Models.Realestate.RealEstateCreateUpdateViewModel
+
+@if (Model.Id.HasValue)
+{
+    <h1>
+        Update
+    </h1>
 }
+else
+{
+    <h1>
+        Create
+    </h1>
+}
+<form method="post">
+    <!-- Peidetud väljad andmete säilitamiseks -->
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="CreatedAt" type="hidden" />
+    <input asp-for="ModifiedAt" type="hidden" />
+
+    <div class="form-group row" style="margin-bottom: 10px;">
+        <label asp-for="Location" class="col-sm-2 col-form-label">Asukoht</label>
+        <div class="col-sm-10">
+            <input asp-for="Location" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-group row" style="margin-bottom: 10px;">
+        <label asp-for="Area" class="col-sm-2 col-form-label">Pindala (m²)</label>
+        <div class="col-sm-10">
+            <input asp-for="Area" class="form-control" type="number" step="0.01" />
+        </div>
+    </div>
+
+    <div class="form-group row" style="margin-bottom: 10px;">
+        <label asp-for="RoomNumber" class="col-sm-2 col-form-label">Tubade arv</label>
+        <div class="col-sm-10">
+            <input asp-for="RoomNumber" class="form-control" type="number" />
+        </div>
+    </div>
+
+    <div class="form-group row" style="margin-bottom: 10px;">
+        <label asp-for="BuildingType" class="col-sm-2 col-form-label">Hoonetüüp</label>
+        <div class="col-sm-10">
+            <input asp-for="BuildingType" class="form-control" />
+        </div>
+    </div>
+
+    <hr />
+    <br />
+
+    @if (Model.Id.HasValue)
+    {
+        <input asp-action="Update" asp-controller="realestate" type="submit" class="btn btn-success" value="Update" />
+    }
+    else
+    {
+        <input asp-action="create" asp-controller="realestate" type="submit" class="btn btn-success" value="Create" />
+    }
+
+    <a asp-action="Index" asp-controller="realestate" class="btn btn-secondary">Back to List</a>
+</form>

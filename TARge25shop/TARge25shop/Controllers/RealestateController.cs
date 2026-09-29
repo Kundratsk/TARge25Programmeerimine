@@ -34,6 +34,7 @@ namespace TARge25shop.Controllers
                     Area = x.Area,
                     Location = x.Location,
                     CreatedAt = x.CreatedAt,
+                    ModifiedAt = x.ModifiedAt,
                     RoomNumber = x.RoomNumber,
                     BuildingType = x.BuildingType
                 });
@@ -49,9 +50,13 @@ namespace TARge25shop.Controllers
             return View("CreateUpdate", result);
         }
         [HttpPost]
-
         public async Task<IActionResult> Create(RealEstateCreateUpdateViewModel vm)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("CreateUpdate", vm);
+            }
+
             var dto = new RealestateDto
             {
                 Area = vm.Area,
@@ -64,7 +69,8 @@ namespace TARge25shop.Controllers
 
             if (result == null)
             {
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("", "Kinnisvara salvestamine ebaõnnestus.");
+                return View("CreateUpdate", vm);
             }
 
             return RedirectToAction(nameof(Index));
@@ -84,6 +90,7 @@ namespace TARge25shop.Controllers
             vm.Id = realestate.Id;
             vm.Area = realestate.Area;
             vm.Location = realestate.Location;
+            vm.RoomNumber = realestate.RoomNumber;
             vm.BuildingType = realestate.BuildingType;
             vm.CreatedAt = realestate.CreatedAt;
             vm.ModifiedAt = realestate.ModifiedAt;
@@ -91,22 +98,37 @@ namespace TARge25shop.Controllers
             return View("CreateUpdate", vm);
         }
         [HttpPost]
-        public async Task<IActionResult> Update(RealEstateCreateUpdateViewModel vm)
+        public async Task<IActionResult> Update(RealEstateCreateUpdateViewModel dto)
         {
-            var dto = new RealestateDto
+            if (!ModelState.IsValid)
             {
-                Id = vm.Id,
-                Area = vm.Area,
-                Location = vm.Location,
-                RoomNumber = vm.RoomNumber,
-                BuildingType = vm.BuildingType
-            };
-            var result = await _realestateServices.Update(dto);
-
-            if (result == null)
-            {
-                return RedirectToAction(nameof(Index));
+                return View("CreateUpdate", dto);
             }
+
+            // 1. Otsi andmebaasist üles olemasolev kinnisvara selle Id järgi
+            // Siin etapis on 'domain.CreatedAt' sees veel andmebaasi õige aeg
+            var domain = await _context.Realestate.FindAsync(dto.Id);
+
+            if (domain == null)
+            {
+                return NotFound();
+            }
+
+            // 2. Kirjuta üle AINULT need väljad, mida kasutaja sai vormil muuta
+            domain.Location = dto.Location;
+            domain.Area = dto.Area;
+            domain.RoomNumber = dto.RoomNumber;
+            domain.BuildingType = dto.BuildingType;
+
+            // NB! ME EI KIRJUTA domain.CreatedAt rida siia üldse!
+            // Nii jääb andmebaasis olev algne loomise aeg täiesti puutumata.
+
+            // Uuendame ainult muutmise aega praeguse hetke peale
+            domain.ModifiedAt = DateTime.Now;
+
+            // 3. Salvesta muudatused
+            _context.Realestate.Update(domain);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -155,7 +177,7 @@ namespace TARge25shop.Controllers
                 return NotFound();
             }
 
-            var vm = new RealestateDeleteViewModel();
+            var vm = new RealestateDetailsViewModel();
 
             vm.Id = realestate.Id;
             vm.Area = realestate.Area;
