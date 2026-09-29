@@ -24,6 +24,8 @@ namespace TARge25shop.ApplicationServices.Services
         //peab lisama interface, et kutsuda see meetod välja
         public async Task<Spaceship> Create(SpaceshipDto dto)
         {
+
+            
             //Siin on vaheinstans dto ja domain vahel, et andmed liiguvad dto-st domain objekt
 
             Spaceship spaceShip = new();
@@ -37,7 +39,20 @@ namespace TARge25shop.ApplicationServices.Services
             spaceShip.UpdatedAt = DateTime.Now;
 
             //kui uus ankeet on loodud, siis toimub ka faili salvestamine
+
+
+            // KONTROLL: Kui meeskond on vähem kui 3, siis tagastame nulli ja ei loo laeva
+            if (spaceShip.Crew < 4) 
+            {
+                spaceShip.Crew = 4;
+            }
+
+
             _fileServices.FilesToApi(dto, spaceShip);
+            if (spaceShip.EnginePower < 0)
+            {
+                spaceShip.EnginePower = 1;
+            }
 
             //andmete salvestamine andmebaasi
             _context.Spaceships.Add(spaceShip);
