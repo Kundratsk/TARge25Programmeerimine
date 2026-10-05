@@ -5,7 +5,7 @@
 
 
 <div>
-    <a asp-action="create" asp-controller="spaceship" type="submit" class="btn btn-primary">Create</a>
+    <a asp-action="create" asp-controller="spaceship" id="CreateInIndex" type="submit" class="btn btn-primary">Create</a>
 </div>
 
 
@@ -16,12 +16,13 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th scope="col">Nr</th>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">Built Date</th>
-                <th scope="col">Crew</th>
-                <th scope="col">EnginePower</th>
+                <th id="IndexRowNumberColumn" scope="col">Nr</th>
+                <th id="IndexNameColumn" scope="col">Name</th>
+                <th id="IndexTypeColumn" scope="col">Type</th>
+                <th id="IndexBuiltDateColumn" scope="col">Built Date</th>
+                <th id="IndexCrewColumn" scope="col">Crew</th>
+                <th id="IndexEnginePowerColumn" scope="col">EnginePower</th>
+                <th id ="IndexActionsColumn" scope="col"> </th>
             </tr>
         </thead>
         <tbody>
@@ -31,16 +32,16 @@
             @foreach (var spaceship in Model)
             {
                 <tr>
-                    <td>@nr</td>
-                    <td>@spaceship.Name</td>
-                    <td>@spaceship.ShipType</td>
-                    <td>@spaceship.CreatedAt</td>
-                    <td>@spaceship.Crew</td>
-                    <td>@spaceship.EnginePower</td>
-                    <td>
-                        <a asp-action="details" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-primary">Details</a>
-                        <a asp-action="update" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-primary">Update</a>
-                        <a asp-action="delete" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-outline-danger">Delete</a>
+                    <td id="IndexRowNumberSpaceship">@nr</td>
+                    <td id="IndexNameSpaceship">@spaceship.Name</td>
+                    <td id="IndexTypeSpaceship">@spaceship.ShipType</td>
+                    <td id="IndexBuiltDateSpaceship">@spaceship.CreatedAt</td>
+                    <td id="IndexCrewSpaceship">@spaceship.Crew</td>
+                    <td id="EnginePowerSpaceship">@spaceship.EnginePower</td>
+                    <td id="IndexActionsSpaceship">
+                        <a id="IndexSpaceshipDetails" asp-action="details" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-primary">Details</a>
+                        <a id="IndexSpaceshipUpdate" asp-action="update" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-primary">Update</a>
+                        <a id="IndexSpaceshipDelete" asp-action="delete" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-outline-danger">Delete</a>
                     </td>
                 </tr>
                     nr++;

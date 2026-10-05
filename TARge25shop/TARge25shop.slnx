@@ -3,6 +3,7 @@
   <Project Path="TARge25shop.Core/TARge25shop.Core.csproj" Id="d4e71467-2bc2-4640-b40c-af1c5898b3e9" />
   <Project Path="TARge25shop.Data/TARge25shop.Data.csproj" Id="f054b18c-3b30-4768-993b-563f78448a40" />
   <Project Path="TARge25Shop.KindergartenTest/TARge25Shop.KindergartenTest.csproj" Id="1afa5065-5e2f-4a1c-8e0c-0c7f42d364ab" />
+  <Project Path="TARge25shop.SeleniumTesting/TARge25shop.SeleniumTesting.csproj" Id="609177b7-a385-45dc-8b2d-6846cbc83ff3" />
   <Project Path="TARge25Shop.SpaceshipTest/TARge25Shop.SpaceshipTest.csproj" Id="a8995fc3-75b4-4540-9c04-53fada4ed725">
     <Build Solution="Debug|*" Project="false" />
   </Project>
