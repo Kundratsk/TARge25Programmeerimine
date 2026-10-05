@@ -4,6 +4,8 @@ using TARge25shop.Core.Dto;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
 using Microsoft.EntityFrameworkCore;
+using System.IO.Enumeration;
+using System.Net.Mime;
 
 
 namespace TARge25shop.ApplicationServices.Services
@@ -98,6 +100,32 @@ namespace TARge25shop.ApplicationServices.Services
             await _context.SaveChangesAsync();
 
             return null;
+        }
+
+        public async Task UploadFilesToDatabase(RealestateDto dto, Realestate domain)
+        {
+
+            //toimub kontroll kas on faile või ei ole
+            if (dto.Files != null && dto.Files.Count > 0)
+            {
+                foreach (var file in dto.Files)
+                {
+                    using (var target = new MemoryStream())
+                    {
+                        FileToDatabase files= new FileToDatabase()
+                        {
+                            Id = Guid.NewGuid(),
+                            ImageTitle = file.FileName,
+                            RealEstateId = domain.Id
+                        };
+
+                        file.CopyTo(target);
+                        files.ImageData = target.ToArray();
+                        _context.FileToDatabases.AddAsync(files);
+                    }
+                }
+            }
+
         }
     }
 }

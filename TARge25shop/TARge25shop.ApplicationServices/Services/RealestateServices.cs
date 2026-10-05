@@ -12,10 +12,12 @@ namespace TARge25shop.ApplicationServices.Services
     public class RealestateServices: IRealestateServices
     {
         private readonly TARge25ShopContext _context;
+        private readonly IFileServices _fileServices;
 
-        public RealestateServices(TARge25ShopContext context)
+        public RealestateServices(TARge25ShopContext context, IFileServices fileServices)
         {
             _context = context;
+            _fileServices = fileServices;
         }
 
         public async Task<Realestate> Create(RealestateDto dto)
@@ -30,6 +32,10 @@ namespace TARge25shop.ApplicationServices.Services
             realEstate.CreatedAt = DateTime.Now;
             realEstate.ModifiedAt = DateTime.Now;
 
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, realEstate);
+            }
 
             _context.Realestate.Add(realEstate);
             await _context.SaveChangesAsync();

@@ -50,6 +50,7 @@ namespace TARge25shop.Controllers
             return View("CreateUpdate", result);
         }
         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Create(RealEstateCreateUpdateViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -57,14 +58,25 @@ namespace TARge25shop.Controllers
                 return View("CreateUpdate", vm);
             }
 
+            // Kontrollime igaks juhuks, et vm.Image ei oleks null, et vältida NullReferenceExceptionit
             var dto = new RealestateDto
             {
                 Area = vm.Area,
                 Location = vm.Location,
                 RoomNumber = vm.RoomNumber,
-                BuildingType = vm.BuildingType
-            };
+                BuildingType = vm.BuildingType,
+                Files = vm.Files,
+                Image = vm.Image
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.ImageId,
+                        ImageData = x.ImageData,
+                        ImageTitle = x.ImageTitle,
+                        RealEstateId = x.RealEstateId
+                    }).ToArray()
+            }; // Siin lõppeb DTO loomine
 
+            // Teenuse väljakutse on nüüd õigesti meetodi sees
             var result = await _realestateServices.Create(dto);
 
             if (result == null)
@@ -75,28 +87,7 @@ namespace TARge25shop.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        [HttpGet]
-        public async Task<IActionResult> Update(Guid id)
-        {
-            var realestate = await _realestateServices.DetailAsync(id);
 
-            if (realestate == null)
-            {
-                return NotFound();
-            }
-
-            var vm = new RealEstateCreateUpdateViewModel();
-
-            vm.Id = realestate.Id;
-            vm.Area = realestate.Area;
-            vm.Location = realestate.Location;
-            vm.RoomNumber = realestate.RoomNumber;
-            vm.BuildingType = realestate.BuildingType;
-            vm.CreatedAt = realestate.CreatedAt;
-            vm.ModifiedAt = realestate.ModifiedAt;
-
-            return View("CreateUpdate", vm);
-        }
         [HttpPost]
         public async Task<IActionResult> Update(RealEstateCreateUpdateViewModel dto)
         {
