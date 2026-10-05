@@ -14,10 +14,11 @@ namespace TARge25Shop
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<TARge25ShopContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             builder.Services.AddScoped<ISpaceshipServices, SpaceshipServices>();
             builder.Services.AddScoped<IFileServices, FileServices>();
-            
+            builder.Services.AddScoped<IKindergartenServices, KindergartenServices>();
 
             var app = builder.Build();
 
@@ -25,7 +26,7 @@ namespace TARge25Shop
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms.
                 app.UseHsts();
             }
 
@@ -43,7 +44,7 @@ namespace TARge25Shop
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<TARge25ShopContext>();
-                dbContext.Database.EnsureCreated();
+                dbContext.Database.Migrate();
             }
 
             app.Run();
