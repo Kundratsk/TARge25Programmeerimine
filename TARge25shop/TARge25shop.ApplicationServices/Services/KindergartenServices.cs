@@ -17,6 +17,22 @@ namespace TARge25shop.ApplicationServices.Services
 
         public async Task<Kindergarten> Create(KindergartenDto dto)
         {
+
+            if (string.IsNullOrWhiteSpace(dto.GroupName))
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.TeacherName))
+            {
+                return null;
+            }
+
+            if (dto.ChildrenCount < 0)
+            {
+                dto.ChildrenCount = 0;
+            }
+
             Kindergarten kindergarten = new();
 
             kindergarten.Id = Guid.NewGuid();

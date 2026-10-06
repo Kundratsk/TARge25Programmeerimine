@@ -192,24 +192,7 @@ namespace TARge25Shop.SpaceshipTest
 
 
 
-        //Test andmed I
-        //            I
-        //            V
-
-        private KindergartenDto MockKindergartenNullData()
-        {
-            return new KindergartenDto
-            {
-                Id = null,
-                GroupName = "",
-                KindergartenName = "",
-                ChildrenCount = 0,
-                TeacherName = "",
-                CreatedAt = DateTime.MinValue,
-                UpdatedAt = DateTime.MinValue,
-            };
-        }
-
+        
         // 11. Selles testis kontrollitakse, et olematu ID-ga lasteaia rühma 
         // päringul andmebaasist tagastab süsteem tühja väärtuse (null) 
         // ega viska ootamatut viga.
@@ -306,7 +289,26 @@ namespace TARge25Shop.SpaceshipTest
 
 
 
+        
+        
         /* üleval testid, all abimeetodid */
+        //Test andmed I
+        //            I
+        //            V
+
+        private KindergartenDto MockKindergartenNullData()
+        {
+            return new KindergartenDto
+            {
+                Id = null,
+                GroupName = "",
+                KindergartenName = "",
+                ChildrenCount = 0,
+                TeacherName = "",
+                CreatedAt = DateTime.MinValue,
+                UpdatedAt = DateTime.MinValue,
+            };
+        }
 
         private KindergartenDto MockKindergartenData(bool isOneOrTwo = false)
         {
