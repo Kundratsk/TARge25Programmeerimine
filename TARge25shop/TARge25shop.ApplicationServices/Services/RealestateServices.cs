@@ -59,8 +59,13 @@ namespace TARge25shop.ApplicationServices.Services
             domain.Location = dto.Location;
             domain.RoomNumber = dto.RoomNumber;
             domain.BuildingType = dto.BuildingType;
-            domain.CreatedAt = DateTime.Now;
             domain.ModifiedAt = DateTime.Now;
+
+            if (dto.Files != null)
+            {
+
+                await _fileServices.UploadFilesToDatabase(dto, domain);
+            }
 
             _context.Realestate.Update(domain);
             await _context.SaveChangesAsync();

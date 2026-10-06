@@ -10,7 +10,6 @@ namespace TARge25shop.Core.Dto
         public string? ImageTitle { get; set; }
         public byte[]? ImageData { get; set; }
         public Guid? RealEstateId { get; set; }
-        { get; set; }
-            = new List<FileToDatabaseDto>();
+        
     }
 }

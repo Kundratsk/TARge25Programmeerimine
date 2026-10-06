@@ -2,17 +2,15 @@
 
 @if (Model.Id.HasValue)
 {
-    <h1>
-        Update
-    </h1>
+    <h1>Update</h1>
 }
 else
 {
-    <h1>
-        Create
-    </h1>
+    <h1>Create</h1>
 }
-<form method="post">
+
+<!-- KRIITILINE MUUDATUS: Lisasime siia enctype atribuudi, et failide saatmine tööle hakkaks! -->
+<form method="post" enctype="multipart/form-data">
     <!-- Peidetud väljad andmete säilitamiseks -->
     <input asp-for="Id" type="hidden" />
     <input asp-for="CreatedAt" type="hidden" />
@@ -45,6 +43,25 @@ else
             <input asp-for="BuildingType" class="form-control" />
         </div>
     </div>
+
+    <div class="form-group row mb-3">
+        <label asp-for="Files" class="control-label">Vali uued pildid </label>
+        <input asp-for="Files" multiple type="file" class="form-control" />
+    </div>
+
+
+    @if (Model.Image != null && Model.Image.Any())
+    {
+        <div class="mb-3">
+            <h5>Praegused pildid:</h5>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var image in Model.Image)
+                {
+                    <partial name="_Images" model="image" />
+                }
+            </div>
+        </div>
+    }
 
     <hr />
     <br />

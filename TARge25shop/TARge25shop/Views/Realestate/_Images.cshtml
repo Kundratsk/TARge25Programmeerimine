@@ -1,0 +1,31 @@
+﻿@model TARge25shop.Models.Realestate.RealEstateImageViewModel
+
+<div class="card text-center shadow-sm mb-3" style="width: 240px; border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden; display: inline-block; margin: 10px; vertical-align: top;">
+    
+    <!-- Pildi kuvamise ala -->
+    <div style="height: 180px; width: 100%; display: flex; align-items: center; justify-content: center; bg-light; padding: 10px;">
+        @if (!string.IsNullOrEmpty(Model.Image))
+        {
+            <!-- Kasutame kontrolleris juba valmis tehtud Base64 stringi -->
+            <img src="@Model.Image" class="img-thumbnail" alt="@Model.ImageTitle" style="max-width: 100%; max-height: 100%; object-fit: contain; border: none;" />
+        }
+        else if (Model.ImageData != null && Model.ImageData.Length > 0)
+        {
+            <!-- Varulahendus: kui mingil põhjusel peaks kontrolleri string puuduma, teeme selle siin baidi massiivist -->
+            var base64 = Convert.ToBase64String(Model.ImageData);
+            var imgSrc = $"data:image/jpeg;base64,{base64}";
+            <img src="@imgSrc" class="img-thumbnail" alt="@Model.ImageTitle" style="max-width: 100%; max-height: 100%; object-fit: contain; border: none;" />
+        }
+        else
+        {
+            <span class="text-muted" style="font-size: 0.9rem;">Pilt puudub</span>
+        }
+    </div>
+
+    <!-- Pildi failinime ala -->
+    <div class="card-body p-2 bg-white border-top">
+        <p class="card-text text-muted text-truncate mb-0" style="font-size: 0.85rem; max-width: 100%;" title="@Model.ImageTitle">
+            @Model.ImageTitle
+        </p>
+    </div>
+</div>
