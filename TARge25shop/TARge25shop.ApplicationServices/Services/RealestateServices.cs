@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Text;
 using TARge25shop.Core.Domain;
 using TARge25shop.Core.Dto;
@@ -34,7 +35,7 @@ namespace TARge25shop.ApplicationServices.Services
 
             if (dto.Files != null)
             {
-                _fileServices.UploadFilesToDatabase(dto, realEstate);
+                 await _fileServices.UploadFilesToDatabase(dto, realEstate);
             }
 
             _context.Realestate.Add(realEstate);
@@ -86,6 +87,16 @@ namespace TARge25shop.ApplicationServices.Services
             var result = await _context.Realestate
                 .FirstOrDefaultAsync(x => x.Id == id);
 
+            var images = await _context.FileToDatabases
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new FileToDatabaseDto
+                {
+                    Id = y.Id
+                }).ToArrayAsync();
+
+            foreach(var image in images) { 
+            await _fileServices.RemoveImageFromDatabase(image);
+            }
             _context.Realestate.Remove(result);
             await _context.SaveChangesAsync();
 
