@@ -1,5 +1,7 @@
 ﻿@model TARge25shop.Models.Realestate.RealEstateCreateUpdateViewModel
 
+
+<div class="card shadow-sm">
 @if (Model.Id.HasValue)
 {
     <h1>Update</h1>
@@ -48,16 +50,21 @@ else
         <label asp-for="Files" class="control-label">Vali uued pildid </label>
         <input asp-for="Files" multiple type="file" class="form-control" />
     </div>
+    </form>
+
 
 
     @if (Model.Image != null && Model.Image.Any())
     {
         <div class="mb-3">
             <h5>Praegused pildid:</h5>
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex flex-wrap gap-2 justify-content-start">
                 @foreach (var image in Model.Image)
                 {
                     <partial name="_Images" model="image" />
+                    <input asp-action="removeImage" asp-controller="realestate" asp-route-ImageId="image.ImageId"
+                    type="submit" class="btn btn-danger" value="Remove Image" />
+                       
                 }
             </div>
         </div>
@@ -66,6 +73,9 @@ else
     <hr />
     <br />
 
+    </div>
+
+<div class="container mt-4">
     @if (Model.Id.HasValue)
     {
         <input asp-action="Update" asp-controller="realestate" type="submit" class="btn btn-success" value="Update" />
@@ -76,4 +86,4 @@ else
     }
 
     <a asp-action="Index" asp-controller="realestate" class="btn btn-secondary">Back to List</a>
-</form>
+<div/>

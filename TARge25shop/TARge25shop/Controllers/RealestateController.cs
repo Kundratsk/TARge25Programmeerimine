@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TARge25shop.ApplicationServices.Services;
 using TARge25shop.Core.Domain;
 using TARge25shop.Core.Dto;
+using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
 using TARge25shop.Models.Realestate;
-using TARge25shop.Core.ServiceInterface;
 
 
 namespace TARge25Shop.Controllers
@@ -13,15 +14,18 @@ namespace TARge25Shop.Controllers
     {
         private readonly IRealestateServices _realestateServices;
         private readonly TARge25ShopContext _context;
+        private readonly IFileServices _fileServices;
 
         public RealEstateController
             (
             IRealestateServices realestateServices,
-            TARge25ShopContext context
+            TARge25ShopContext context,
+            IFileServices fileServices
             )
         {
             _realestateServices = realestateServices;
             _context = context;
+            _fileServices = fileServices;
         }
 
         public IActionResult Index()
@@ -90,6 +94,8 @@ namespace TARge25Shop.Controllers
                 return NotFound();
             }
 
+            var image = await FileFromDatabase(Id);
+
             var vm = new RealEstateCreateUpdateViewModel();
 
             vm.Id = realEstate.Id;
@@ -97,6 +103,8 @@ namespace TARge25Shop.Controllers
             vm.Location = realEstate.Location;
             vm.RoomNumber = realEstate.RoomNumber;
             vm.BuildingType = realEstate.BuildingType;
+
+            vm.Image.AddRange(image);
 
             return View("CreateUpdate", vm);
         }
@@ -142,6 +150,8 @@ namespace TARge25Shop.Controllers
                 return NotFound();
             }
 
+            var images = await FileFromDatabase(Id);
+
             var vm = new RealestateDeleteViewModel();
 
             vm.Id = realEstate.Id;
@@ -151,6 +161,8 @@ namespace TARge25Shop.Controllers
             vm.BuildingType = realEstate.BuildingType;
             vm.CreatedAt = realEstate.CreatedAt;
             vm.ModifiedAt = realEstate.ModifiedAt;
+
+            vm.Images.AddRange(images);
 
             return View(vm);
         }
@@ -193,6 +205,25 @@ namespace TARge25Shop.Controllers
 
             return View(vm);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(RealEstateImageViewModel vm)
+        {
+            var dto = new FileToDatabaseDto()
+            {
+                Id = vm.ImageId
+            };
+
+            var image = await _fileServices.RemoveImageFromDatabase(dto);
+
+            if (image == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task<RealEstateImageViewModel[]> FileFromDatabase(Guid id)
         {
             var databaseImages = await _context.FileToDatabases

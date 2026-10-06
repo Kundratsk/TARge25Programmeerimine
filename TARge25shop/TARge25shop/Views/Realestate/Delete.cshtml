@@ -1,5 +1,7 @@
 ﻿@model TARge25shop.Models.Realestate.RealestateDeleteViewModel
 
+
+<div class="card shadow-sm">
 <div class="container mt-4">
     <div class="alert alert-danger">
         <h3>Kas oled kindel, et soovid selle objekti kustutada?</h3>
@@ -20,9 +22,29 @@
         <dd class="col-sm-9">@Model.BuildingType</dd>
     </dl>
 
+    @if (Model.Images != null && Model.Images.Any())
+    {
+        <div class="row">
+            @foreach (var image in Model.Images)
+            {
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <img src="@image.Image" class="card-img-top" alt="@image.ImageTitle" style="max-height: 200px; object-fit: cover;" />
+                        <div class="card-body">
+                            <p class="card-text text-muted small">@image.ImageTitle</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    </div>
+    </div>
+<div class="container mt-4">
     <form asp-action="DeleteConfirmed" asp-controller="Realestate" method="post">
         <input type="hidden" asp-for="Id" />
         <button type="submit" class="btn btn-danger">Jah, kustuta</button>
         <a asp-action="Index" asp-controller="Realestate" class="btn btn-secondary">Tühista</a>
     </form>
-</div>
+<div/>
