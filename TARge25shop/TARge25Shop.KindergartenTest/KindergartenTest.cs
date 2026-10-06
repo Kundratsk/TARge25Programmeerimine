@@ -140,7 +140,7 @@ namespace TARge25Shop.SpaceshipTest
             var result = await Svc<IKindergartenServices>().Update(nullDto);
 
             // kontroll
-            Assert.NotEqual(createdGroup.Id, result.Id);
+            Assert.Null(result);
         }
 
         // Selles testis kontrollitakse, et lasteaia rühma loomisel ei lubaks teenus sisestada negatiivset laste arvu ning süsteem tagab, et arv on suurem kui null.
