@@ -33,6 +33,8 @@ namespace TARge25shop.ApplicationServices.Services
                 dto.ChildrenCount = 0;
             }
 
+            
+
             Kindergarten kindergarten = new();
 
             kindergarten.Id = Guid.NewGuid();

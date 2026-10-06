@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-using TARge25shop.Core.Dto;
+﻿using TARge25shop.Core.Dto;
 using TARge25shop.Core.ServiceInterface;
 using Xunit;
 
@@ -10,292 +6,306 @@ namespace TARge25Shop.SpaceshipTest
 {
     public class KindergartenTest : TestBase
     {
-        // Selles testis kontrollitakse, et korrektsete andmete
-        // edastamisel lasteaia loomise teenusele peaks tagastatav
-        // tulemus olema edukas ning andmebaasi loodud objekt ei tohi olla tühi.
-
+        // Kontrollib, et korrektsete andmetega Kindergarten loomine õnnestub.
         [Fact]
         public async Task Should_AddKindergarten_WhenResultIsReturned()
         {
-            //ülesseade
-            var dto = MockKindergartenData(false);
-            //tegevus
+            // Ülesseade
+            var dto = MockKindergartenData();
+
+            // Tegevus
             var result = await Svc<IKindergartenServices>().Create(dto);
 
-            //kontroll
+            // Kontroll
             Assert.NotNull(result);
+            Assert.NotEqual(Guid.Empty, result.Id);
+            Assert.Equal(dto.GroupName, result.GroupName);
+            Assert.Equal(dto.KindergartenName, result.KindergartenName);
+            Assert.Equal(dto.ChildrenCount, result.ChildrenCount);
+            Assert.Equal(dto.TeacherName, result.TeacherName);
         }
 
-
-        // Selles testis kontrollitakse, et lasteaia rühma päringul
-        // andmebaasist peaks süsteem tagastama objekti siis,
-        // kui otsitav ID on andmebaasi ID-ga sama.
-
+        // Kontrollib, et olemasoleva ID järgi leitakse õige Kindergarten.
         [Fact]
         public async Task Should_GetKindergartenByID_WhenGuidIsEqual()
         {
-            //ülesseade
-            Guid databaseGuid = Guid.Parse("ecbc059a-0bca-4df2-aae9-a3211e69185a");
-            Guid seekGuid = Guid.Parse("ecbc059a-0bca-4df2-aae9-a3211e69185a");
+            // Ülesseade
+            var dto = MockKindergartenData();
+            var createdGroup = await Svc<IKindergartenServices>().Create(dto);
 
-            //tegevus
-            var result = await Svc<IKindergartenServices>().DetailAsync(seekGuid);
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync((Guid)createdGroup.Id);
 
-            //kontroll
-            Assert.Equal(databaseGuid, seekGuid);
+            // Kontroll
+            Assert.NotNull(result);
+            Assert.Equal(createdGroup.Id, result.Id);
         }
 
-        
-        // Selles testis kontrollitakse, et lasteaia rühma
-        // päringul andmebaasist ei tohiks süsteem tagastada
-        // objekti, kui otsitav ID ja andmebaasi ID ei ole samad.
+        // Kontrollib, et olematu ID järgi Kindergarten'i ei leita.
         [Fact]
         public async Task ShouldNot_GetKindergartenByID_WhenIDNotEqual()
         {
-            //ülesseade
-            Guid realGuid = Guid.Parse("ecbc059a-0bca-4df2-aae9-a3211e69185a");
+            // Ülesseade
+            var dto = MockKindergartenData();
+            var createdGroup = await Svc<IKindergartenServices>().Create(dto);
+
             Guid wrongGuid = Guid.NewGuid();
 
-            //tegevus
-            var result = await Svc<IKindergartenServices>().DetailAsync(realGuid);
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync(wrongGuid);
 
-            //kontroll
-            Assert.NotEqual(wrongGuid, realGuid);
+            // Kontroll
+            Assert.NotEqual(createdGroup.Id, wrongGuid);
+            Assert.Null(result);
         }
 
-        
-        // Selles testis kontrollitakse,
-        // et lasteaia rühma kustutamisel andmebaasist
-        // peaks objekt kustuma, kui tagastatav väärtus on sama mis loodud objektil.
+        // Kontrollib, et kustutamisel tagastatakse kustutatud objekti õige ID.
         [Fact]
         public async Task Should_KindergartenDeletedByID_WhenReturnedResultIsEqual()
         {
-            // ülesseade
+            // Ülesseade
             var dto = MockKindergartenData();
-            // tegevus
-            var addGroup = await Svc<IKindergartenServices>().Create(dto);
-            var deleteGroup = await Svc<IKindergartenServices>().Delete((Guid)addGroup.Id);
-            //kontroll
-            Assert.Equal(addGroup.Id, deleteGroup.Id);
+            var createdGroup = await Svc<IKindergartenServices>().Create(dto);
+
+            // Tegevus
+            var deleteGroup = await Svc<IKindergartenServices>()
+                .Delete((Guid)createdGroup.Id);
+
+            // Kontroll
+            Assert.NotNull(deleteGroup);
+            Assert.Equal(createdGroup.Id, deleteGroup.Id);
         }
 
-        
-        // Selles testis kontrollitakse, et lasteaia
-        //rühma kustutamisel ei muutu ega kustu teise rühma andmed
-        //ning nende ID-d ei tohi ühtida.
+        // Kontrollib, et ühe Kindergarten'i kustutamine ei kustuta teist.
         [Fact]
         public async Task ShouldNot_DeleteKindergartenByID_WhenDidNotDeleteKindergarten()
         {
-            //ülesseade
-            var dto = MockKindergartenData();
-            //tegevus
-            var kinderGarten1 = await Svc<IKindergartenServices>().Create(dto);
-            var kinderGarten2 = await Svc<IKindergartenServices>().Create(dto);
+            // Ülesseade
+            var dto1 = MockKindergartenData(false);
+            var dto2 = MockKindergartenData(true);
 
-            var result = await Svc<IKindergartenServices>().Delete((Guid)kinderGarten2.Id);
-            //kontroll
-            Assert.NotEqual(kinderGarten1.Id, result.Id);
+            var kindergarten1 = await Svc<IKindergartenServices>().Create(dto1);
+            var kindergarten2 = await Svc<IKindergartenServices>().Create(dto2);
+
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .Delete((Guid)kindergarten2.Id);
+
+            // Kontroll
+            Assert.NotNull(result);
+            Assert.NotEqual(kindergarten1.Id, result.Id);
+
+            var firstKindergarten = await Svc<IKindergartenServices>()
+                .DetailAsync((Guid)kindergarten1.Id);
+
+            Assert.NotNull(firstKindergarten);
+            Assert.Equal(kindergarten1.Id, firstKindergarten.Id);
         }
 
-        // Selles testis kontrollitakse, et lasteaia rühma andmete uuendamisel
-        // muudetakse andmebaasis rühma ja õpetaja nimed, kuid objekti
-        // unikaalne ID peab jääma samaks.
+        // Kontrollib, et Kindergarten andmete uuendamisel
+        // jääb ID samaks ja muud andmed muutuvad õigeks.
         [Fact]
         public async Task Should_UpdateKindergartenByID_WhenUpdatingData()
         {
-            // ülesseade
-            var guid = Guid.Parse("68eb8abd-086a-4c8b-9695-71234143f709");
+            // Ülesseade
             var dto = MockKindergartenData();
+            var createdGroup = await Svc<IKindergartenServices>().Create(dto);
 
-            KindergartenDto domain = new();
-            domain.Id = guid;
-            domain.GroupName = "Karupojad";
-            domain.KindergartenName = "Tallinna Lasteaed";
-            domain.ChildrenCount = 12;
-            domain.TeacherName = "Õpetaja Tamm";
-            domain.CreatedAt = dto.CreatedAt;
-            domain.UpdatedAt = DateTime.UtcNow;
+            var updateDto = new KindergartenDto
+            {
+                Id = createdGroup.Id,
+                GroupName = "Karupojad",
+                KindergartenName = "Tallinna Lasteaed",
+                ChildrenCount = 12,
+                TeacherName = "Õpetaja Tamm",
+                CreatedAt = createdGroup.CreatedAt,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-            // tegevus
-            await Svc<IKindergartenServices>().Update(dto);
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .Update(updateDto);
 
-            // kontroll
-            Assert.Equal(domain.Id, guid);
-            Assert.NotEqual(dto.GroupName, domain.GroupName);
-            Assert.NotEqual(dto.TeacherName, domain.TeacherName);
-            Assert.NotEqual(dto.ChildrenCount, domain.ChildrenCount);
-            Assert.NotEqual(dto.KindergartenName, domain.KindergartenName);
+            // Kontroll
+            Assert.NotNull(result);
+            Assert.Equal(createdGroup.Id, result.Id);
+            Assert.Equal("Karupojad", result.GroupName);
+            Assert.Equal("Tallinna Lasteaed", result.KindergartenName);
+            Assert.Equal(12, result.ChildrenCount);
+            Assert.Equal("Õpetaja Tamm", result.TeacherName);
         }
 
-        // Selles testis kontrollitakse, et kui lasteaia rühma andmeid üritatakse uuendada tühjade või vigaste andmetega, siis ei tohi süsteem olemasoleva rühma andmeid muuta.
+        // Kontrollib, et olematu ID-ga Kindergarten'i ei saa uuendada.
         [Fact]
         public async Task ShouldNot_UpdateKindergartenByID_WhenNoDataIsUpdated()
         {
-            // ülesseade
+            // Ülesseade
             var dto = MockKindergartenData();
             var createdGroup = await Svc<IKindergartenServices>().Create(dto);
             var nullDto = MockKindergartenNullData();
 
-            // tegevus
-            var result = await Svc<IKindergartenServices>().Update(nullDto);
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .Update(nullDto);
 
-            // kontroll
+            // Kontroll
             Assert.Null(result);
+
+            // Kontrollime, et olemasolev objekt on endiselt alles.
+            var existingGroup = await Svc<IKindergartenServices>()
+                .DetailAsync((Guid)createdGroup.Id);
+
+            Assert.NotNull(existingGroup);
+            Assert.Equal(createdGroup.Id, existingGroup.Id);
+            Assert.Equal(createdGroup.GroupName, existingGroup.GroupName);
+            Assert.Equal(createdGroup.TeacherName, existingGroup.TeacherName);
+            Assert.Equal(createdGroup.ChildrenCount, existingGroup.ChildrenCount);
         }
 
-        // Selles testis kontrollitakse, et lasteaia rühma loomisel ei lubaks teenus sisestada negatiivset laste arvu ning süsteem tagab, et arv on suurem kui null.
+        // Kontrollib, et negatiivne laste arv muudetakse nulliks.
         [Fact]
         public async Task ShouldNot_CreateKindergartenWithNegativeChildrenCount_WhenCountIsNegative()
         {
-            // ülesseade
+            // Ülesseade
             var dto = MockKindergartenData();
             dto.ChildrenCount = -5;
 
-            // tegevus
+            // Tegevus
             var result = await Svc<IKindergartenServices>().Create(dto);
 
-            // kontroll
+            // Kontroll
+            Assert.NotNull(result);
             Assert.True(result.ChildrenCount >= 0);
         }
 
-        // Selles testis kontrollitakse, et rühma loomisel peab olema määratud õpetaja nimi ning ilma kasvatajata rühma andmebaasi lisada ei tohi.
+        // Kontrollib, et ilma õpetaja nimeta Kindergarten'i ei looda.
         [Fact]
         public async Task ShouldNot_CreateKindergarten_WhenTeacherNameIsEmpty()
         {
-            // ülesseade
+            // Ülesseade
             var dto = MockKindergartenData();
             dto.TeacherName = "";
 
-            // tegevus
+            // Tegevus
             var result = await Svc<IKindergartenServices>().Create(dto);
 
-            // kontroll
+            // Kontroll
             Assert.Null(result);
         }
 
-        // Selles testis kontrollitakse, et pärast rühma edukat kustutamist eemaldatakse andmed andmebaasist lõplikult ja objekti ei ole enam võimalik leida.
+        // Kontrollib, et pärast kustutamist ei ole objekti enam võimalik leida.
         [Fact]
         public async Task Should_RemoveKindergartenFromDatabase_WhenKindergartenIsDeleted()
         {
-            // ülesseade
+            // Ülesseade
             var dto = MockKindergartenData();
-
-            // tegevus
             var createdGroup = await Svc<IKindergartenServices>().Create(dto);
-            await Svc<IKindergartenServices>().Delete((Guid)createdGroup.Id);
-            var result = await Svc<IKindergartenServices>().DetailAsync((Guid)createdGroup.Id);
 
-            // kontroll
+            // Tegevus
+            await Svc<IKindergartenServices>()
+                .Delete((Guid)createdGroup.Id);
+
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync((Guid)createdGroup.Id);
+
+            // Kontroll
             Assert.Null(result);
         }
 
-
-
-
-        
-        // 11. Selles testis kontrollitakse, et olematu ID-ga lasteaia rühma 
-        // päringul andmebaasist tagastab süsteem tühja väärtuse (null) 
-        // ega viska ootamatut viga.
+        // Kontrollib, et olematu ID puhul tagastab DetailAsync null.
         [Fact]
         public async Task Should_ReturnNull_WhenKindergartenDoesNotExist()
         {
-            // ülesseade
+            // Ülesseade
             Guid nonExistingGuid = Guid.NewGuid();
 
-            // tegevus
-            var result = await Svc<IKindergartenServices>().DetailAsync(nonExistingGuid);
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync(nonExistingGuid);
 
-            // kontroll
+            // Kontroll
             Assert.Null(result);
         }
 
-        // 12. Selles testis kontrollitakse, et kui üritatakse kustutada lasteaeda, 
-        // mida andmebaasis ei eksisteeri, siis teenus ei viska crashi, 
-        // vaid tagastab nulli või vastava veatunnuse.
+        // Kontrollib, et olematu ID kustutamisel tagastatakse null.
         [Fact]
         public async Task Should_ReturnNull_WhenDeletingNonExistingKindergarten()
         {
-            // ülesseade
+            // Ülesseade
             Guid nonExistingGuid = Guid.NewGuid();
 
-            // tegevus
-            var result = await Svc<IKindergartenServices>().Delete(nonExistingGuid);
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .Delete(nonExistingGuid);
 
-            // kontroll
+            // Kontroll
             Assert.Null(result);
         }
 
-        // 13. Selles testis kontrollitakse, et rühma loomisel peab olema määratud 
-        // ka rühma nimi ning ilma nimeta (tühi string) rühma luua ei tohi.
+        // Kontrollib, et tühja rühma nimega Kindergarten'i ei looda.
         [Fact]
         public async Task ShouldNot_CreateKindergarten_WhenGroupNameIsEmpty()
         {
-            // ülesseade
+            // Ülesseade
             var dto = MockKindergartenData();
-            dto.GroupName = ""; // vigane sisend
+            dto.GroupName = "";
 
-            // tegevus
+            // Tegevus
             var result = await Svc<IKindergartenServices>().Create(dto);
 
-            // kontroll
+            // Kontroll
             Assert.Null(result);
         }
 
-        // 14. Selles testis kontrollitakse, et rühma andmete uuendamisel 
-        // muudetakse andmebaasis korrektselt laste arvu (ChildrenCount), 
-        // kui edastatakse uus kehtiv väärtus.
+        // Kontrollib, et laste arvu uuendamisel salvestatakse uus väärtus.
         [Fact]
         public async Task Should_UpdateChildrenCount_WhenDataIsCorrect()
         {
-            // ülesseade
+            // Ülesseade
             var dto = MockKindergartenData();
             var createdGroup = await Svc<IKindergartenServices>().Create(dto);
 
-            // loome uuendamise DTO, kus muudame laste arvu
             var updateDto = new KindergartenDto
             {
                 Id = createdGroup.Id,
                 GroupName = createdGroup.GroupName,
                 KindergartenName = createdGroup.KindergartenName,
-                ChildrenCount = 25, // uus arv
+                ChildrenCount = 25,
                 TeacherName = createdGroup.TeacherName,
                 CreatedAt = createdGroup.CreatedAt,
                 UpdatedAt = DateTime.UtcNow
             };
 
-            // tegevus
-            var result = await Svc<IKindergartenServices>().Update(updateDto);
+            // Tegevus
+            var result = await Svc<IKindergartenServices>()
+                .Update(updateDto);
 
-            // kontroll
+            // Kontroll
+            Assert.NotNull(result);
             Assert.Equal(25, result.ChildrenCount);
         }
 
-        // 15. Selles testis kontrollitakse, et kahe erineva rühma loomisel 
-        // genereerib süsteem neile automaatselt erinevad ja unikaalsed ID-d.
+        // Kontrollib, et kaks Kindergarten'i saavad erinevad ID-d.
         [Fact]
         public async Task Should_GenerateUniqueIds_WhenTwoKindergartensAreCreated()
         {
-            // ülesseade
+            // Ülesseade
             var dto1 = MockKindergartenData(false);
             var dto2 = MockKindergartenData(true);
 
-            // tegevus
+            // Tegevus
             var result1 = await Svc<IKindergartenServices>().Create(dto1);
             var result2 = await Svc<IKindergartenServices>().Create(dto2);
 
-            // kontroll
+            // Kontroll
+            Assert.NotNull(result1);
+            Assert.NotNull(result2);
             Assert.NotEqual(result1.Id, result2.Id);
         }
 
-
-
-        
-        
-        /* üleval testid, all abimeetodid */
-        //Test andmed I
-        //            I
-        //            V
-
+        // Abimeetod vigaste või puuduvate andmete jaoks.
         private KindergartenDto MockKindergartenNullData()
         {
             return new KindergartenDto
@@ -306,13 +316,14 @@ namespace TARge25Shop.SpaceshipTest
                 ChildrenCount = 0,
                 TeacherName = "",
                 CreatedAt = DateTime.MinValue,
-                UpdatedAt = DateTime.MinValue,
+                UpdatedAt = DateTime.MinValue
             };
         }
 
+        // Abimeetod korrektsete testandmete loomiseks.
         private KindergartenDto MockKindergartenData(bool isOneOrTwo = false)
         {
-            if (isOneOrTwo == false)
+            if (!isOneOrTwo)
             {
                 return new KindergartenDto
                 {
@@ -321,21 +332,19 @@ namespace TARge25Shop.SpaceshipTest
                     ChildrenCount = 18,
                     TeacherName = "Maiu",
                     CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
             }
-            else
+
+            return new KindergartenDto
             {
-                return new KindergartenDto
-                {
-                    GroupName = "Sipsik",
-                    KindergartenName = "Kooli tänav 12, Tartu",
-                    ChildrenCount = 22,
-                    TeacherName = "Maiu",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                };
-            }
+                GroupName = "Sipsik",
+                KindergartenName = "Kooli tänav 12, Tartu",
+                ChildrenCount = 22,
+                TeacherName = "Maiu",
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
         }
     }
 }
