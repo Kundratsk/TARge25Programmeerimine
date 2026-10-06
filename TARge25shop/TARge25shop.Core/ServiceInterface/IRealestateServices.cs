@@ -12,5 +12,7 @@ namespace TARge25shop.Core.ServiceInterface
         Task<Realestate> Update(RealestateDto dto);
         Task<Realestate> DetailAsync(Guid id);
         Task<Realestate> Delete(Guid id);
+
+        Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto);
     }
 }

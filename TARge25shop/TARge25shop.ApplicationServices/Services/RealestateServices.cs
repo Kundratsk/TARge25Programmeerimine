@@ -93,21 +93,10 @@ namespace TARge25shop.ApplicationServices.Services
         }
         public async Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto)
         {
-            var image = await _context.FileToDatabases
-                .Where(x => x.Id == dto.Id)
-                .FirstOrDefaultAsync();
-
-            if (image == null)
-            {
-                return null;
-            }
-
-            _context.FileToDatabases.Remove(image);
-            await _context.SaveChangesAsync();
-
-            return image;
-
-
+            // Kutsub otse sinu FileServices failis olevat kustutamismeetodit
+            var result = await _fileServices.RemoveImageFromDatabase(dto);
+            return result;
         }
+
     }
 }

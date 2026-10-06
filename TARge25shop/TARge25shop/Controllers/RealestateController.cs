@@ -122,22 +122,25 @@ namespace TARge25Shop.Controllers
                 ModifiedAt = vm.ModifiedAt,
 
                 Files = vm.Files,
-                Image = vm.Image?
-            .Select(x => new FileToDatabaseDto
-            {
-                Id = x.ImageId,
-                ImageData = x.ImageData,
-                ImageTitle = x.ImageTitle,
-                RealEstateId = x.RealEstateId
-            }).ToArray()
+                Image = vm.Image
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.ImageId,
+                        ImageData = x.ImageData,
+                        ImageTitle = x.ImageTitle,
+                        RealEstateId = x.RealEstateId
+                    }).ToArray()
             };
 
             var result = await _realestateServices.Update(dto);
+
+            var realEstateId = result.Id;
+            
             if (result == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = realEstateId});
         }
 
         [HttpGet]
@@ -216,19 +219,21 @@ namespace TARge25Shop.Controllers
 
             var image = await _fileServices.RemoveImageFromDatabase(dto);
 
+            var realEstateId = image.RealEstateId;
+
             if (image == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Update), new {id = realEstateId});
         }
 
         private async Task<RealEstateImageViewModel[]> FileFromDatabase(Guid id)
         {
             var databaseImages = await _context.FileToDatabases
                 .Where(x => x.RealEstateId == id)
-                .ToArrayAsync(); // Sulud olid puudu!
+                .ToArrayAsync(); 
 
             return databaseImages.Select(y => new RealEstateImageViewModel
             {
