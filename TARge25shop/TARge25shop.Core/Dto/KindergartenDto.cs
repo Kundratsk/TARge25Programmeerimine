@@ -1,4 +1,6 @@
-﻿namespace TARge25shop.Core.Dto
+﻿using Microsoft.AspNetCore.Http;
+
+namespace TARge25shop.Core.Dto
 {
     public class KindergartenDto
     {
@@ -12,5 +14,9 @@
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        // UUS
+        public List<IFormFile> Files { get; set; } = new();
+        public List<FileToDatabaseDto> Image { get; set; } = new();
     }
 }

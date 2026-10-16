@@ -39,6 +39,28 @@
             @Model.TeacherName
         </dd>
 
+        <dt class="col-sm-3">
+            Images
+        </dt>
+        <dd class="col-sm-9">
+            @if (Model.Image.Count == 0)
+            {
+                <span class="text-muted">No images</span>
+            }
+            else
+            {
+                <div class="d-flex flex-wrap gap-3">
+                    @foreach (var img in Model.Image)
+                    {
+                        <img src="@img.ImageData"
+                             alt="@img.ImageTitle"
+                             style="height:120px; width:auto;"
+                             class="img-thumbnail" />
+                    }
+                </div>
+            }
+        </dd>
+
     </dl>
 
     <form asp-action="DeleteConfirmed" method="post">
