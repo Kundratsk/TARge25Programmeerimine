@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TARge25shop.Core.Dto;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
@@ -9,13 +10,16 @@ namespace TARge25shop.Controllers
     public class KindergartenController : Controller
     {
         private readonly IKindergartenServices _kindergartenServices;
+        private readonly IFileServices _fileServices;
         private readonly TARge25ShopContext _context;
 
         public KindergartenController(
             IKindergartenServices kindergartenServices,
+            IFileServices fileServices,
             TARge25ShopContext context)
         {
             _kindergartenServices = kindergartenServices;
+            _fileServices = fileServices;
             _context = context;
         }
 
@@ -55,15 +59,11 @@ namespace TARge25shop.Controllers
                 GroupName = vm.GroupName,
                 KindergartenName = vm.KindergartenName,
                 ChildrenCount = vm.ChildrenCount,
-                TeacherName = vm.TeacherName
+                TeacherName = vm.TeacherName,
+                Files = vm.Files
             };
 
-            var result = await _kindergartenServices.Create(dto);
-
-            if (result == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            await _kindergartenServices.Create(dto);
 
             return RedirectToAction(nameof(Index));
         }
@@ -85,7 +85,8 @@ namespace TARge25shop.Controllers
                 GroupName = kindergarten.GroupName,
                 KindergartenName = kindergarten.KindergartenName,
                 ChildrenCount = kindergarten.ChildrenCount,
-                TeacherName = kindergarten.TeacherName
+                TeacherName = kindergarten.TeacherName,
+                Image = await LoadImages(id)
             };
 
             return View("CreateUpdate", vm);
@@ -101,15 +102,11 @@ namespace TARge25shop.Controllers
                 GroupName = vm.GroupName,
                 KindergartenName = vm.KindergartenName,
                 ChildrenCount = vm.ChildrenCount,
-                TeacherName = vm.TeacherName
+                TeacherName = vm.TeacherName,
+                Files = vm.Files
             };
 
-            var result = await _kindergartenServices.Update(dto);
-
-            if (result == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            await _kindergartenServices.Update(dto);
 
             return RedirectToAction(nameof(Index));
         }
@@ -133,7 +130,8 @@ namespace TARge25shop.Controllers
                 ChildrenCount = kindergarten.ChildrenCount,
                 TeacherName = kindergarten.TeacherName,
                 CreatedAt = kindergarten.CreatedAt,
-                UpdatedAt = kindergarten.UpdatedAt
+                UpdatedAt = kindergarten.UpdatedAt,
+                Image = await LoadImages(id)
             };
 
             return View(vm);
@@ -143,12 +141,7 @@ namespace TARge25shop.Controllers
         [HttpPost, ActionName("DeleteConfirmed")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var kindergarten = await _kindergartenServices.Delete(id);
-
-            if (kindergarten == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            await _kindergartenServices.Delete(id);
 
             return RedirectToAction(nameof(Index));
         }
@@ -172,10 +165,50 @@ namespace TARge25shop.Controllers
                 ChildrenCount = kindergarten.ChildrenCount,
                 TeacherName = kindergarten.TeacherName,
                 CreatedAt = kindergarten.CreatedAt,
-                UpdatedAt = kindergarten.UpdatedAt
+                UpdatedAt = kindergarten.UpdatedAt,
+                Image = await LoadImages(id)
             };
 
             return View(vm);
+        }
+
+        // POST: Kindergarten/RemoveImage
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(KindergartenImageViewModel vm)
+        {
+            if (vm.ImageId == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var dto = new FileToDatabaseDto { Id = vm.ImageId.Value };
+            await _fileServices.RemoveImageFromDatabase(dto);
+
+            return RedirectToAction(nameof(Update), new { id = vm.KindergartenId });
+        }
+
+        private async Task<List<KindergartenImageViewModel>> LoadImages(Guid id)
+        {
+            var images = await _context.FileToDatabases
+                .Where(x => x.KindergartenId == id)
+                .Select(x => new KindergartenImageViewModel
+                {
+                    ImageId = x.Id,
+                    KindergartenId = x.KindergartenId,
+                    ImageTitle = x.ImageTitle,
+                    Image = x.ImageData
+                })
+                .ToListAsync();
+
+            foreach (var img in images)
+            {
+                if (img.Image != null)
+                {
+                    img.ImageData = "data:image/jpeg;base64," + Convert.ToBase64String(img.Image);
+                }
+            }
+
+            return images;
         }
     }
 }

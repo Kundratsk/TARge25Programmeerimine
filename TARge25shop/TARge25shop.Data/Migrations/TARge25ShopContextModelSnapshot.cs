@@ -17,10 +17,52 @@ namespace TARge25shop.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.11")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("TARge25shop.Core.Domain.FileToApi", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExistingFilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("SpaceshipId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileToApis");
+                });
+
+            modelBuilder.Entity("TARge25shop.Core.Domain.FileToDatabase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("ImageData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ImageTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("KindergartenId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("RealEstateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KindergartenId");
+
+                    b.ToTable("FileToDatabases");
+                });
 
             modelBuilder.Entity("TARge25shop.Core.Domain.Kindergarten", b =>
                 {
@@ -54,43 +96,6 @@ namespace TARge25shop.Data.Migrations
                     b.ToTable("Kindergarten");
                 });
 
-            modelBuilder.Entity("TARge25shop.Core.Domain.FileToApi", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExistingFilePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("SpaceshipId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FileToApis");
-                });
-
-            modelBuilder.Entity("TARge25shop.Core.Domain.FileToDatabase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<byte[]>("ImageData")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("ImageTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("RealEstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FileToDatabases");
-                });
-
             modelBuilder.Entity("TARge25shop.Core.Domain.Realestate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -122,7 +127,6 @@ namespace TARge25shop.Data.Migrations
                     b.ToTable("Realestate");
                 });
 
-
             modelBuilder.Entity("TARge25shop.Core.Domain.Spaceship", b =>
                 {
                     b.Property<Guid>("Id")
@@ -152,6 +156,15 @@ namespace TARge25shop.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Spaceships");
+                });
+
+            modelBuilder.Entity("TARge25shop.Core.Domain.FileToDatabase", b =>
+                {
+                    b.HasOne("TARge25shop.Core.Domain.Kindergarten", "Kindergarten")
+                        .WithMany()
+                        .HasForeignKey("KindergartenId");
+
+                    b.Navigation("Kindergarten");
                 });
 #pragma warning restore 612, 618
         }

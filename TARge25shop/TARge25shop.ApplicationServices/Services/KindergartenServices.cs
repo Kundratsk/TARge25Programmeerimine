@@ -9,10 +9,14 @@ namespace TARge25shop.ApplicationServices.Services
     public class KindergartenServices : IKindergartenServices
     {
         private readonly TARge25ShopContext _context;
+        private readonly IFileServices _fileServices;   // UUS
 
-        public KindergartenServices(TARge25ShopContext context)
+        public KindergartenServices(
+            TARge25ShopContext context,
+            IFileServices fileServices)                  // UUS
         {
             _context = context;
+            _fileServices = fileServices;                // UUS
         }
 
         public async Task<Kindergarten> Create(KindergartenDto dto)
@@ -29,6 +33,9 @@ namespace TARge25shop.ApplicationServices.Services
 
             _context.Kindergarten.Add(kindergarten);
             await _context.SaveChangesAsync();
+
+            // UUS: pildid andmebaasi
+            await _fileServices.UploadFilesToDatabase(dto, kindergarten);
 
             return kindergarten;
         }
@@ -52,6 +59,9 @@ namespace TARge25shop.ApplicationServices.Services
             _context.Kindergarten.Update(domain);
             await _context.SaveChangesAsync();
 
+            // UUS: uued pildid andmebaasi
+            await _fileServices.UploadFilesToDatabase(dto, domain);
+
             return domain;
         }
 
@@ -71,6 +81,21 @@ namespace TARge25shop.ApplicationServices.Services
             if (result == null)
             {
                 return null;
+            }
+
+            // UUS: kõigepealt selle lasteaia pildid
+            var images = await _context.FileToDatabases
+                .Where(x => x.KindergartenId == id)
+                .Select(x => new FileToDatabaseDto
+                {
+                    Id = x.Id,
+                    KindergartenId = x.KindergartenId
+                })
+                .ToArrayAsync();
+
+            if (images.Length > 0)
+            {
+                await _fileServices.RemoveImagesFromDatabase(images);
             }
 
             _context.Kindergarten.Remove(result);

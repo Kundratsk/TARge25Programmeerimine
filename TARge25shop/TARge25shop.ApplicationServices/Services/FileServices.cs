@@ -148,5 +148,43 @@ namespace TARge25shop.ApplicationServices.Services
 
 
         }
+        public async Task<List<FileToDatabase>> RemoveImagesFromDatabase(FileToDatabaseDto[] dtos)
+        {
+            var ids = dtos.Select(x => x.Id).ToList();
+
+            var images = await _context.FileToDatabases
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+
+            _context.FileToDatabases.RemoveRange(images);
+            await _context.SaveChangesAsync();
+
+            return images;
+        }
+        public async Task UploadFilesToDatabase(KindergartenDto dto, Kindergarten domain)
+        {
+            if (dto.Files != null && dto.Files.Count > 0)
+            {
+                foreach (var file in dto.Files)
+                {
+                    using (var target = new MemoryStream())
+                    {
+                        await file.CopyToAsync(target);
+
+                        FileToDatabase files = new FileToDatabase()
+                        {
+                            Id = Guid.NewGuid(),
+                            ImageTitle = file.FileName,
+                            ImageData = target.ToArray(),
+                            KindergartenId = domain.Id
+                        };
+
+                        await _context.FileToDatabases.AddAsync(files);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
