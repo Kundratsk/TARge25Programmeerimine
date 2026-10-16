@@ -22,6 +22,38 @@ namespace TARge25shop.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("TARge25shop.Core.Domain.Kindergarten", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ChildrenCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("KindergartenName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeacherName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Kindergarten");
+                });
+
             modelBuilder.Entity("TARge25shop.Core.Domain.FileToApi", b =>
                 {
                     b.Property<Guid>("Id")
@@ -89,6 +121,7 @@ namespace TARge25shop.Data.Migrations
 
                     b.ToTable("Realestate");
                 });
+
 
             modelBuilder.Entity("TARge25shop.Core.Domain.Spaceship", b =>
                 {
