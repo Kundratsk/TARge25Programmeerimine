@@ -1,5 +1,6 @@
 ﻿@model TARge25shop.Models.Spaceship.SpaceshipDetailsViewModel
 
+
 @{
     ViewData["Title"] = "Kosmoselaeva andmed";
 }
@@ -32,6 +33,10 @@
                 <dt class="col-sm-3 font-weight-bold">Uuendatud:</dt>
                 <dd class="col-sm-9">@Model.UpdatedAt</dd>
             </dl>
+            @foreach (var images in Model.Image)
+            {
+                <partial name="_Images" model="images" />
+            }
         </div>
         <div class="card-footer bg-light d-flex gap-2">
             <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning">Muuda andmeid</a>

@@ -17,6 +17,8 @@ namespace TARge25Shop
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<ISpaceshipServices, SpaceshipServices>();
             builder.Services.AddScoped<IKindergartenServices, KindergartenServices>();
+            builder.Services.AddScoped<IFileServices, FileServices>();
+            builder.Services.AddScoped<IRealestateServices, RealestateServices>();
 
 
             var app = builder.Build();

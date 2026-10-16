@@ -1,15 +1,20 @@
 ﻿@model IEnumerable<TARge25shop.Models.Spaceship.SpaceshipIndexViewModel>
 
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="h1">
+        Spaceships
+    </div>
+        <a asp-action="create" asp-controller="spaceship" type="submit" class="btn btn-primary">Create</a>
+    </div>
 
-<div>
-    <a asp-action="create" asp-controller="spaceship" type="submit" class="btn btn-primary">Create</a>
-</div>
 
 
-<div class="h1">
-    Spaceships
-</div>
+
+
+
+
+
 <form method="get">
     <table class="table table-hover">
         <thead>
@@ -20,6 +25,7 @@
                 <th scope="col">Built Date</th>
                 <th scope="col">Crew</th>
                 <th scope="col">EnginePower</th>
+                <th >Tegevused</th>
             </tr>
         </thead>
         <tbody>
@@ -35,7 +41,7 @@
                     <td>@spaceship.CreatedAt</td>
                     <td>@spaceship.Crew</td>
                     <td>@spaceship.EnginePower</td>
-                    <td>
+                    <td >
                         <a asp-action="details" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-primary">Details</a>
                         <a asp-action="update" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-primary">Update</a>
                         <a asp-action="delete" asp-controller="spaceship" asp-route-id="@spaceship.Id" class="btn btn-outline-danger">Delete</a>
