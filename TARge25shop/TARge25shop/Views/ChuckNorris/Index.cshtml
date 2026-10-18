@@ -1,0 +1,47 @@
+﻿@model TARge25Shop.Models.ChuckNorris.ChuckNorrisViewModel
+
+@{
+    ViewData["Title"] = "Chuck Norris Nali";
+}
+
+<div class="container my-5" style="max-width: 600px;">
+    <!-- Kaart nalja kuvamiseks -->
+    <div class="card shadow-sm border-0 bg-light rounded-3 overflow-hidden">
+        <div class="card-body p-4 text-center">
+
+            <!-- Ikoon ja Pealkiri -->
+            @if (!string.IsNullOrEmpty(Model.IconUrl))
+            {
+                <img src="@Model.IconUrl" alt="Chuck Norris" class="mb-3" style="width: 60px; height: 60px;" />
+            }
+            <h1 class="h3 mb-4 text-primary">Chuck Norris nali</h1>
+
+            <!-- Nalja tekst suurema ja loetavama fondiga -->
+            <p class="lead fs-4 italic mb-4">"@Model.Value"</p>
+
+            <!-- Nupu vorm -->
+            <form asp-action="Index" method="get">
+                <button type="submit" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
+                    Uus nali
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Tehnilised andmed peidetava akordioni või puhta plokina allpool -->
+    <div class="mt-4 p-3 bg-white rounded-3 border">
+        <h3 class="h6 text-muted text-uppercase mb-3">Tehnilised andmed:</h3>
+        <ul class="list-unstyled mb-0 small text-secondary" style="font-family: monospace;">
+            <li class="mb-1"><strong>ID:</strong> @Model.Id</li>
+            <li class="mb-1"><strong>Loodud:</strong> @Model.CreatedAt</li>
+            <li class="mb-1"><strong>Muudetud:</strong> @Model.UpdatedAt</li>
+            <li class="mb-1">
+                <strong>API Link:</strong>
+                <a href="@Model.Url" target="_blank" class="text-decoration-none text-truncate d-inline-block align-bottom" style="max-width: 250px;">
+                    @Model.Url
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
