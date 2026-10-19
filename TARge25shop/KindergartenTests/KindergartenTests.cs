@@ -136,6 +136,19 @@ namespace TARge25Shop.KindergartenTest
             Assert.Null(result);
         }
 
+        // 8. Kontrollime, et laste arv ei oleks negatiivne.
+        [Fact]
+        public async Task ShouldNot_CreateKindergartenWithNegativeChildrenCount_WhenChildrenCountIsNegative()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            dto.ChildrenCount = -5;
+
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            Assert.NotNull(result);
+            Assert.True(result.ChildrenCount >= 0);
+        }
+
 
 
 
