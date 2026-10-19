@@ -42,7 +42,19 @@ namespace TARge25Shop.SpaceshipTest
             Assert.Null(result);
         }
 
+        // 3. Kontrollime, et õige ID-ga leitakse õige lasteaed.
+        [Fact]
+        public async Task Should_GetKindergartenByID_WhenGuidIsEqual()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            var created = await Svc<IKindergartenServices>().Create(dto);
 
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync((Guid)created.Id);
+
+            Assert.NotNull(result);
+            Assert.Equal(created.Id, result.Id);
+        }
 
 
 
