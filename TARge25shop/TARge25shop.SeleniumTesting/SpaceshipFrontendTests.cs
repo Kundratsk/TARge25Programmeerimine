@@ -116,7 +116,10 @@ namespace TARge25Shop.SeleniumTesting
             List<IWebElement> rowsOfTable = tableOfIndex.FindElements(By.TagName("tr")).ToList();
             rowsOfTable.RemoveAt(0);
             bool isObjectFound = false;
-            var spaceShipNameData = "";
+            string spaceShipNameData = "";
+            string spaceShipTypeData = "";
+            string spaceShipCrewData = "";
+            string spaceShipBuiltAtData = "";
             //IWebElement indexNameSpaceship = driver.FindElement(By.Id("IndexNameSpaceship"));
             //var spaceShipNameData = indexNameSpaceship.Text;
             //IWebElement indexTypeSpaceship = driver.FindElement(By.Id("IndexTypeSpaceship"));
@@ -124,17 +127,15 @@ namespace TARge25Shop.SeleniumTesting
             //IWebElement indexCrewSpaceship = driver.FindElement(By.Id("IndexCrewSpaceship"));
             //var spaceShipCrewData = indexCrewSpaceship.Text;
             bool doesItExist = false;
-
-            //otsi kõik read,
-            var table = driver.FindElement(By.Id("IndexTable"));
-            List<IWebElement> rows = table.FindElements(By.TagName("tr")).ToList();
-            //otsi nime elemendist concreteName võrdlusega
-            foreach (var row in rows)
+            foreach (var row in rowsOfTable)
             {
-                var locatedelement = row.FindElement(By.Id("IndexNameSpaceship"));
-                if (locatedelement.Text == concreteName)
+                if (row.FindElement(By.Id("IndexNameSpaceship")).Text == thisRunGuid)
                 {
                     doesItExist = true;
+                    spaceShipNameData = thisRunGuid;
+                    spaceShipTypeData = row.FindElement(By.Id("IndexTypeSpaceship")).Text;
+                    spaceShipCrewData = row.FindElement(By.Id("IndexCrewSpaceship")).Text;
+                    spaceShipBuiltAtData = row.FindElement(By.Id("IndexBuiltDateSpaceship")).Text;
                     break;
                 }
             }
