@@ -93,6 +93,32 @@ namespace TARge25Shop.KindergartenTest
 
             Assert.NotEqual(kindergarten1.Id, result.Id);
         }
+        // 6. Kontrollime, et lasteaia andmeid saab uuendada.
+        [Fact]
+        public async Task Should_UpdateKindergartenByID_WhenUpdatingData()
+        {
+            // ülesseade
+            KindergartenDto dto = MockKindergartenData();
+
+            var created = await Svc<IKindergartenServices>().Create(dto);
+
+            dto.Id = created.Id;
+            dto.GroupName = "Mesimummud";
+            dto.KindergartenName = "Tallinna Lasteaed";
+            dto.ChildrenCount = 25;
+            dto.TeacherName = "Mari";
+
+            // tegevus
+            var result = await Svc<IKindergartenServices>().Update(dto);
+
+            // kontroll
+            Assert.NotNull(result);
+            Assert.Equal(dto.Id, result.Id);
+            Assert.Equal("Mesimummud", result.GroupName);
+            Assert.Equal("Tallinna Lasteaed", result.KindergartenName);
+            Assert.Equal(25, result.ChildrenCount);
+            Assert.Equal("Mari", result.TeacherName);
+        }
 
 
         //Test andmed I
