@@ -26,6 +26,26 @@ namespace TARge25Shop.SpaceshipTest
             Assert.NotNull(result);
         }
 
+        // 2. Kontrollime, et vale ID-ga lasteaeda ei leita.
+        [Fact]
+        public async Task ShouldNot_GetKindergartenByID_WhenIDNotEqual()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            var created = await Svc<IKindergartenServices>().Create(dto);
+
+            Guid wrongGuid = Guid.NewGuid();
+
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync(wrongGuid);
+
+            Assert.NotEqual(wrongGuid, created.Id);
+            Assert.Null(result);
+        }
+
+
+
+
+
 
         //Test andmed I
         //            I
