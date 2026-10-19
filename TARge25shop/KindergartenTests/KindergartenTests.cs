@@ -214,6 +214,18 @@ namespace TARge25Shop.KindergartenTest
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result.GroupName));
         }
+        // 13. Kontrollime, et lasteaia nimi ei oleks tühi.
+        [Fact]
+        public async Task ShouldNot_CreateKindergartenWithEmptyKindergartenName_WhenKindergartenNameIsEmpty()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            dto.KindergartenName = "";
+
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            Assert.NotNull(result);
+            Assert.False(string.IsNullOrWhiteSpace(result.KindergartenName));
+        }
 
         //Test andmed I
         //            I
