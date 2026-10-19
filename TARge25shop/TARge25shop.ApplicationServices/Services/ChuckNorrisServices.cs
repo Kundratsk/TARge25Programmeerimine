@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using TARge25Shop.Core.Dto;
-using TARge25Shop.Core.ServiceInterface;
+using TARge25shop.Core.Dto;
+using TARge25shop.Core.ServiceInterface;
 
-namespace TARge25Shop.ApplicationServices.Services
+namespace TARge25shop.ApplicationServices.Services
 {
     public class ChuckNorrisServices : IChuckNorrisServices
     {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
-using TARge25Shop.Core.ServiceInterface;
-using TARge25Shop.Models.ChuckNorris;
+using TARge25shop.Core.ServiceInterface;
+using TARge25shop.Models.ChuckNorris;
 
-namespace TARge25Shop.Controllers
+namespace TARge25shop.Controllers
 {
     public class ChuckNorrisController : Controller
     {

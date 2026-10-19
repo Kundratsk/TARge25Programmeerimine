@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace TARge25Shop.Core.Dto
+namespace TARge25shop.Core.Dto
 {
     public class ChuckNorrisRootDto
     {
