@@ -284,6 +284,63 @@ namespace TARge25Shop.SeleniumTesting
             Assert.True(rowCount < 2);
         }
 
+        [Fact]
+        [Order(6)]
+        public void Should_NavigateToDetails_OfThisSpaceShip_WithPreviouslyCorrectData()
+        {
+            {
+                //ülesseade
+                IWebDriver driver = SetupAndNavigateSIndex();
+
+                //otsime üles kõik tabeli read, rida htmli tabelis tähistatakse "tr"iga
+                //ICollection<IWebElement> table = driver.FindElements(By.TagName("tr"));
+                var table = driver.FindElement(By.Id("IndexTable"));
+                List<IWebElement> rows = table.FindElements(By.TagName("tr")).ToList();
+                rows.RemoveAt(0);
+                bool isObjectFound = false;
+                //tsükkel käib kõik read läbi
+
+                foreach (var row in rows)
+                {
+
+                    var locatedelement = row.FindElement(By.Id("IndexNameSpaceship"));
+                    if (locatedelement.Text == thisRunGuid)
+                    {
+                        //siis vajuta selles reas asuvat details nuppu
+                        var rowelement = row.FindElement(By.Id("IndexActionsSpaceship"));
+                        var button = rowelement.FindElement(By.Id("IndexSpaceshipDetails"));
+                        button.Click();
+                        //pärast õiget vajutust, tsükkel katkestatakse
+                        //arvuti tudub
+                        Thread.Sleep(500);
+                        break;
+                    }
+                }
+                //andmete kogumine pärast reloadi
+                IWebElement details_SpaceshipId = driver.FindElement(By.Id("Details_SpaceshipId"));
+                var details_id = details_SpaceshipId.Text;
+
+                IWebElement details_SpaceshipName = driver.FindElement(By.Id("Details_SpaceshipName"));
+                var details_name = details_SpaceshipName.Text;
+
+                IWebElement details_SpaceshipType = driver.FindElement(By.Id("Details_SpaceshipType"));
+                var details_type = details_SpaceshipType.Text;
+
+                IWebElement details_SpaceshipCrew = driver.FindElement(By.Id("Details_SpaceshipCrew"));
+                var details_crew = details_SpaceshipCrew.Text;
+
+                IWebElement details_SpaceshipPower = driver.FindElement(By.Id("Details_SpaceshipPower"));
+                var details_power = details_SpaceshipPower.Text;
+                //kontroll
+                Assert.NotNull(details_id);
+                Assert.Equal(thisRunGuid, details_name);
+                Assert.Equal("i add name for spaceship", details_name);
+                Assert.Equal("i add ship type for spaceship", details_type);
+                Assert.Equal("12345", details_crew);
+                Assert.Equal("666667", details_power);
+            }
+        }
+
 
         private static IWebDriver SetupAndNavigateSIndex()
         {
