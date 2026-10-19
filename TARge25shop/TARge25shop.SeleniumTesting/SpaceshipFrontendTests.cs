@@ -331,13 +331,23 @@ namespace TARge25Shop.SeleniumTesting
 
                 IWebElement details_SpaceshipPower = driver.FindElement(By.Id("Details_SpaceshipPower"));
                 var details_power = details_SpaceshipPower.Text;
+
+                driver.Quit();
                 //kontroll
+                Assert.True(isObjectFound);
                 Assert.NotNull(details_id);
+                //et ei oleks tühi kontrollid kõikidele andmetele
+                Assert.NotEmpty(details_name);
+                Assert.NotNull(details_type);
+                Assert.False(string.IsNullOrEmpty(details_power));
+                Assert.True(!string.IsNullOrEmpty(details_crew));
+
                 Assert.Equal(thisRunGuid, details_name);
-                Assert.Equal("i add name for spaceship", details_name);
                 Assert.Equal("i add ship type for spaceship", details_type);
                 Assert.Equal("12345", details_crew);
                 Assert.Equal("666667", details_power);
+                Assert.True(int.Parse(details_crew).GetType() == typeof(int));
+                Assert.True(int.Parse(details_power).GetType() == typeof(int));
             }
         }
 
