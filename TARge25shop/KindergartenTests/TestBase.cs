@@ -5,8 +5,8 @@ using Microsoft.Extensions.Hosting;
 using TARge25shop.ApplicationServices.Services;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
-using TARge25shop.SpaceshipTest.Macros;
-using TARge25shop.SpaceshipTest.Mock;
+using TARge25shop.KindergartenTest.Macros;
+using TARge25shop.KindergartenTest.Mock;
 
 namespace TARge25shop.SpaceshipTest
 {

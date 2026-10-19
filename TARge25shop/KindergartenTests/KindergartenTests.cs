@@ -7,7 +7,7 @@ using TARge25shop.Core.ServiceInterface;
 using TARge25shop.SpaceshipTest;
 using Xunit;
 
-namespace TARge25Shop.SpaceshipTest
+namespace TARge25Shop.KindergartenTest
 {
     public class KindergartenTest : TestBase
     {
@@ -60,6 +60,19 @@ namespace TARge25Shop.SpaceshipTest
             Assert.Equal(created.Id, result.Id);
         }
 
+        // 4. Kontrollime, et lasteaia kustutamisel
+        // tagastatakse kustutatud lasteaia ID.
+        [Fact]
+        public async Task Should_KindergartenDeletedByID_WhenReturnedResultIsEqual()
+        {
+            KindergartenDto dto = MockKindergartenData();
+
+            var created = await Svc<IKindergartenServices>().Create(dto);
+            var deleted = await Svc<IKindergartenServices>()
+                .Delete((Guid)created.Id);
+
+            Assert.Equal(created.Id, deleted.Id);
+        }
 
 
         //Test andmed I
