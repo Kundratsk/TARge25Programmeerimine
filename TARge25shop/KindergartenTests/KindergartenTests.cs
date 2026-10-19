@@ -238,6 +238,19 @@ namespace TARge25Shop.KindergartenTest
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result.TeacherName));
         }
+        // 15. Kontrollime, et positiivse laste arvuga
+        // lasteaia loomine õnnestuks.
+        [Fact]
+        public async Task Should_CreateKindergartenWithPositiveChildrenCount_WhenChildrenCountIsPositive()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            dto.ChildrenCount = 18;
+
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            Assert.NotNull(result);
+            Assert.True(result.ChildrenCount > 0);
+        }
 
 
         //Test andmed I
