@@ -120,6 +120,24 @@ namespace TARge25Shop.KindergartenTest
             Assert.Equal("Mari", result.TeacherName);
         }
 
+        // 7. Kontrollime, et tühjade andmetega uuendamine
+        // ei asendaks olemasolevat lasteaeda.
+        [Fact]
+        public async Task ShouldNot_UpdateKindergartenByID_WhenNoDataIsUpdated()
+        {
+            KindergartenDto dto = MockKindergartenData();
+
+            var created = await Svc<IKindergartenServices>().Create(dto);
+            var nullDto = MockKindergartenNullData();
+
+            var result = await Svc<IKindergartenServices>().Update(nullDto);
+
+            // KONTROLL: Kuna nullDto ID-d pole andmebaasis, peab result olema null
+            Assert.Null(result);
+        }
+
+
+
 
         //Test andmed I
         //            I
