@@ -144,9 +144,12 @@ namespace TARge25Shop.SeleniumTesting
             //kontroll
             //Assert.True(concreteName == indexNameSpaceship.Text);
             Assert.True(true == doesItExist);
-            Assert.Equal(spaceShipNameData, "i add name for spaceship");
+            Assert.Equal(spaceShipNameData, thisRunGuid);
             Assert.True(spaceShipTypeData == "i add ship type for spaceship");
             Assert.Equal(spaceShipCrewData, "12345");
+            Assert.True((thisRunGuid == spaceShipNameData) &&
+            ("i add ship type for spaceship" == spaceShipTypeData) &&
+            ("12345" == spaceShipCrewData));
         }
 
         [Fact]
