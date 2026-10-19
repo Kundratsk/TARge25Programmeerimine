@@ -149,6 +149,18 @@ namespace TARge25Shop.KindergartenTest
             Assert.True(result.ChildrenCount >= 0);
         }
 
+        // 9. Kontrollime, et laste arv oleks suurem kui null.
+        [Fact]
+        public async Task ShouldNot_CreateKindergarten_WhenChildrenCountIsZeroOrLess()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            dto.ChildrenCount = 0;
+
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            Assert.NotNull(result);
+            Assert.True(result.ChildrenCount > 0);
+        }
 
 
 
