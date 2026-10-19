@@ -74,6 +74,26 @@ namespace TARge25Shop.KindergartenTest
             Assert.Equal(created.Id, deleted.Id);
         }
 
+        // 5. Kontrollime, et teise lasteaia kustutamisel
+        // ei kustutata esimest lasteaeda.
+        [Fact]
+        public async Task ShouldNot_DeleteKindergartenByID_WhenDeletingAnotherKindergarten()
+        {
+            var dto1 = MockKindergartenData(false);
+            var dto2 = MockKindergartenData(true);
+
+            var kindergarten1 =
+                await Svc<IKindergartenServices>().Create(dto1);
+
+            var kindergarten2 =
+                await Svc<IKindergartenServices>().Create(dto2);
+
+            var result = await Svc<IKindergartenServices>()
+                .Delete((Guid)kindergarten2.Id);
+
+            Assert.NotEqual(kindergarten1.Id, result.Id);
+        }
+
 
         //Test andmed I
         //            I
