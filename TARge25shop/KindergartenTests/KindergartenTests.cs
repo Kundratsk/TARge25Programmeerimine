@@ -202,6 +202,19 @@ namespace TARge25Shop.KindergartenTest
             Assert.Equal(created1.Id, result.Id);
         }
 
+        // 12. Kontrollime, et rühma nimi ei oleks tühi.
+        [Fact]
+        public async Task ShouldNot_CreateKindergartenWithEmptyGroupName_WhenGroupNameIsEmpty()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            dto.GroupName = "";
+
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            Assert.NotNull(result);
+            Assert.False(string.IsNullOrWhiteSpace(result.GroupName));
+        }
+
         //Test andmed I
         //            I
         //            V
