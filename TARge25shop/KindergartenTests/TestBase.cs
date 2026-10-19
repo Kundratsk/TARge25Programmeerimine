@@ -2,16 +2,13 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TARge25shop.ApplicationServices.Services;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
-using TARge25Shop.SpaceshipTest.Macros;
-using TARge25Shop.SpaceshipTest.Mock;
+using TARge25shop.SpaceshipTest.Macros;
+using TARge25shop.SpaceshipTest.Mock;
 
-namespace TARge25Shop.SpaceshipTest
+namespace TARge25shop.SpaceshipTest
 {
     public abstract class TestBase
     {
