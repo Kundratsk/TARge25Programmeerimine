@@ -161,7 +161,24 @@ namespace TARge25Shop.KindergartenTest
             Assert.NotNull(result);
             Assert.True(result.ChildrenCount > 0);
         }
+        // 10. Kontrollime, et kustutatud lasteaeda
+        // ei oleks andmebaasist enam võimalik leida.
+        [Fact]
+        public async Task Should_RemoveKindergartenFromDatabase_WhenKindergartenIsDeleted()
+        {
+            KindergartenDto dto = MockKindergartenData();
 
+            var created = await Svc<IKindergartenServices>().Create(dto);
+
+            var deleted = await Svc<IKindergartenServices>()
+                .Delete((Guid)created.Id);
+
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync((Guid)created.Id);
+
+            Assert.Equal(created.Id, deleted.Id);
+            Assert.Null(result);
+        }
 
 
         //Test andmed I
