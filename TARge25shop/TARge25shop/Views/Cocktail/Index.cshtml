@@ -1,0 +1,87 @@
+﻿@model TARge25shop.Models.Cocktail.CocktailViewModel
+
+@{
+    ViewData["Title"] = "Cocktail Search";
+}
+
+<div class="container py-4">
+    <h1 class="mb-4">Cocktail Search</h1>
+
+    <form asp-controller="Cocktail"
+          asp-action="Index"
+          method="get"
+          class="mb-4">
+
+        <div class="input-group">
+            <input type="text"
+                   name="searchTerm"
+                   value="@Model.SearchTerm"
+                   class="form-control"
+                   placeholder="Enter cocktail name..."
+                   aria-label="Cocktail name" />
+
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.SearchTerm)
+             && Model.Cocktails.Count == 0)
+    {
+        <p>Ühtegi kokteili ei leitud.</p>
+    }
+
+    <div class="row g-4">
+        @foreach (var cocktail in Model.Cocktails)
+        {
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrWhiteSpace(cocktail.Image))
+                    {
+                        <img src="@cocktail.Image"
+                             class="card-img-top"
+                             alt="@cocktail.Name"
+                             loading="lazy" />
+                    }
+
+                    <div class="card-body">
+                        <h2 class="card-title h5">
+                            @cocktail.Name
+                        </h2>
+
+                        @if (!string.IsNullOrWhiteSpace(cocktail.Category))
+                        {
+                            <p class="text-muted mb-1">
+                                Category: @cocktail.Category
+                            </p>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(cocktail.Alcoholic))
+                        {
+                            <p class="text-muted mb-1">
+                                @cocktail.Alcoholic
+                            </p>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(cocktail.Glass))
+                        {
+                            <p>Glass: @cocktail.Glass</p>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(cocktail.Instructions))
+                        {
+                            <p>@cocktail.Instructions</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

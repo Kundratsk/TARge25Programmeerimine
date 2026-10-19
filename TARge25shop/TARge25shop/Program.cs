@@ -2,6 +2,8 @@ using TARge25shop.ApplicationServices.Services;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
 using Microsoft.EntityFrameworkCore;
+using TARge25shop.ServicesInterface;
+using TARge25shop.Services;
 
 namespace TARge25shop
 {
@@ -20,6 +22,8 @@ namespace TARge25shop
             builder.Services.AddScoped<IFileServices, FileServices>();
             builder.Services.AddScoped<IRealestateServices, RealestateServices>();
             builder.Services.AddScoped<IChuckNorrisServices, ChuckNorrisServices>();
+            builder.Services.AddHttpClient<ICocktailServices,
+            CocktailServices>();
 
             builder.Services.AddHttpClient(); //uuri mis teeb
 
