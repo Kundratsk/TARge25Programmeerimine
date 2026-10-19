@@ -16,7 +16,9 @@ namespace TARge25Shop.SpaceshipTest
         // tulemus olema edukas ning andmebaasi loodud objekt ei tohi olla tühi.
 
 
-        //Test 1
+        // Test 1: Kontrollib, kas uue lasteaia andmete edukal lisamisel teenuse kaudu
+        // tagastatakse loodud objekt ja see ei ole null. See tagab, et andmete 
+        // salvestamise funktsionaalsus käivitub ja tagastab tulemuse.
         [Fact]
         public async Task Should_AddKindergarten_WhenResultIsReturned()
         {
@@ -28,7 +30,21 @@ namespace TARge25Shop.SpaceshipTest
             //kontroll
             Assert.NotNull(result);
         }
+        // 2. Kontrollime, et vale ID-ga lasteaeda ei leita.
+        [Fact]
+        public async Task ShouldNot_GetKindergartenByID_WhenIDNotEqual()
+        {
+            KindergartenDto dto = MockKindergartenData();
+            var created = await Svc<IKindergartenServices>().Create(dto);
 
+            Guid wrongGuid = Guid.NewGuid();
+
+            var result = await Svc<IKindergartenServices>()
+                .DetailAsync(wrongGuid);
+
+            Assert.NotEqual(wrongGuid, created.Id);
+            Assert.Null(result);
+        }
 
 
 
