@@ -3,7 +3,7 @@ using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace TARge25Shop
+namespace TARge25shop
 {
     public class Program
     {
@@ -21,6 +21,7 @@ namespace TARge25Shop
             builder.Services.AddScoped<IRealestateServices, RealestateServices>();
             builder.Services.AddScoped<IChuckNorrisServices, ChuckNorrisServices>();
 
+            builder.Services.AddHttpClient(); //uuri mis teeb
 
             var app = builder.Build();
 

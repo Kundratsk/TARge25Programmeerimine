@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TARge25Shop.Core.Dto;
+using TARge25shop.Core.Dto;
 
-namespace TARge25Shop.Core.ServiceInterface
+namespace TARge25shop.Core.ServiceInterface
 {
     public interface IChuckNorrisServices
     {
