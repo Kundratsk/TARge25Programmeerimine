@@ -1,0 +1,79 @@
+﻿
+@model TARge25shop.Models.WeatherViewModel
+
+@{
+    ViewData["Title"] = "Ilmateade";
+}
+
+<div class="container mt-5">
+    <h1>Ilmateade</h1>
+    <p>Vaata valitud linna praeguseid ilmaolusid.</p>
+
+    <form asp-controller="Weather"
+          asp-action="Index"
+          method="post"
+          class="mb-4">
+        <div class="mb-3">
+            <label for="city" class="form-label">
+                Linna nimi
+            </label>
+            <input type="text"
+                   id="city"
+                   name="city"
+                   value="@Model.City"
+                   class="form-control"
+                   placeholder="Näiteks Tallinn"
+                   required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Otsi ilma
+        </button>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <div class="card shadow-sm" style="max-width: 450px;">
+            <div class="card-body text-center">
+                <h2>@Model.City</h2>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Icon))
+                {
+                    <img
+                        src="https://openweathermap.org/img/wn/@(Model.Icon)@@2x.png"
+                        alt="@Model.Description"
+                        width="100"
+                        height="100" />
+                }
+
+                <h3>@Model.Temperature.ToString("F1") °C</h3>
+                <p class="text-capitalize">
+                    @Model.Description
+                </p>
+
+                <hr />
+
+                <p>
+                    <strong>Tunnetav temperatuur:</strong>
+                    @Model.FeelsLike.ToString("F1") °C
+                </p>
+
+                <p>
+                    <strong>Õhuniiskus:</strong>
+                    @Model.Humidity%
+                </p>
+
+                <p>
+                    <strong>Tuule kiirus:</strong>
+                    @Model.WindSpeed.ToString("F1") m/s
+                </p>
+            </div>
+        </div>
+    }
+</div>
