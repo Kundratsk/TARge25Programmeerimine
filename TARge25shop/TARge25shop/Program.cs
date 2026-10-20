@@ -24,7 +24,12 @@ namespace TARge25shop
             builder.Services.AddScoped<IChuckNorrisServices, ChuckNorrisServices>();
             builder.Services.AddHttpClient<ICocktailServices,
             CocktailServices>();
-
+            builder.Services.AddHttpClient<IWeatherService, WeatherService>(
+            client =>
+            {
+                client.BaseAddress =
+                    new Uri("https://api.openweathermap.org/");
+            });
             builder.Services.AddHttpClient(); //uuri mis teeb
 
             var app = builder.Build();
