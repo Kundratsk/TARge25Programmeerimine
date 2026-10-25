@@ -193,6 +193,26 @@ namespace TARge25shop.KindergartenSeleniumTests
             Assert.Equal("0", _driver.FindElement(By.Id("ChildrenCount")).GetAttribute("value"));
             Assert.Equal("", _driver.FindElement(By.Id("TeacherName")).GetAttribute("value"));
         }
+        /// <summary>
+        /// Originaaltest 2: Update vorm avaneb olemasoleva objekti andmetega eeltäidetuna.
+        /// Kontrollib pealkirja "Edit Kindergarten" ja et iga sisestusvälja väärtus
+        /// on sama, mis objekti loomisel sisestati.
+        /// </summary>
+        [Fact]
+        public void UpdateForm_ShouldBePrefilledWithExistingValues()
+        {
+            var data = NewData();
+            CreateViaUi(data);
+
+            GetRow(data.GroupName).FindElement(By.LinkText("Update")).Click();
+            WaitForUrlContains("/Kindergarten/Update");
+
+            Assert.Equal("Edit Kindergarten", _driver.FindElement(By.TagName("h1")).Text.Trim());
+            Assert.Equal(data.GroupName, _driver.FindElement(By.Id("GroupName")).GetAttribute("value"));
+            Assert.Equal(data.KindergartenName, _driver.FindElement(By.Id("KindergartenName")).GetAttribute("value"));
+            Assert.Equal(data.ChildrenCount.ToString(), _driver.FindElement(By.Id("ChildrenCount")).GetAttribute("value"));
+            Assert.Equal(data.TeacherName, _driver.FindElement(By.Id("TeacherName")).GetAttribute("value"));
+        }
 
         // ------------------------------------------------------------------
         // Abimeetodid
