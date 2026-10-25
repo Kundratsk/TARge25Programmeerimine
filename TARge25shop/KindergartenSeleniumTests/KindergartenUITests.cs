@@ -66,7 +66,29 @@ namespace TARge25shop.KindergartenSeleniumTests
             Assert.NotEmpty(cells[6].Text.Trim());
         }
 
+        /// <summary>
+        /// Details test: loob objekti, avab Index tabelis selle rea Details lehe
+        /// ja kontrollib, et lehe pealkiri on "Kindergarten Details" ning kõik
+        /// väljad (grupp, lasteaed, laste arv, õpetaja) kattuvad sisestatuga
+        /// ja Created At ning Updated At on täidetud.
+        /// </summary>
+        /// <summary>
+        /// Details test: loob objekti, avab Index tabelis selle rea Details lehe
+        /// ja kontrollib, et lehe pealkiri on "Kindergarten Details" ning kõik
+        /// väljad (grupp, lasteaed, laste arv, õpetaja) kattuvad sisestatuga
+        /// ja Created At ning Updated At on täidetud.
+        /// </summary>
+        [Fact]
+        public void Details_ShouldShowAllFieldsOfCreatedKindergarten()
+        {
+            var data = NewData();
+            CreateViaUi(data);
 
+            OpenDetails(data.GroupName);
+
+            Assert.Equal("Kindergarten Details", _driver.FindElement(By.TagName("h1")).Text.Trim());
+            AssertDetailsValues(data);
+        }
 
         // ------------------------------------------------------------------
         // Abimeetodid
@@ -141,6 +163,36 @@ namespace TARge25shop.KindergartenSeleniumTests
         private static By RowLocator(string groupName)
         {
             return By.XPath($"//table//tbody/tr[td[normalize-space(.)='{groupName}']]");
+        }
+        private void OpenDetails(string groupName)
+        {
+            if (!_driver.Url.TrimEnd('/').EndsWith("/Kindergarten", StringComparison.OrdinalIgnoreCase))
+            {
+                GoToIndex();
+            }
+
+            GetRow(groupName).FindElement(By.LinkText("Details")).Click();
+            WaitForUrlContains("/Kindergarten/Details");
+        }
+
+        private List<string> ReadDetailsValues()
+        {
+            return _driver
+                .FindElements(By.CssSelector("dl dd"))
+                .Select(e => e.Text.Trim())
+                .ToList();
+        }
+
+        private void AssertDetailsValues(KindergartenData data)
+        {
+            var values = ReadDetailsValues();
+
+            Assert.Equal(data.GroupName, values[0]);
+            Assert.Equal(data.KindergartenName, values[1]);
+            Assert.Equal(data.ChildrenCount.ToString(), values[2]);
+            Assert.Equal(data.TeacherName, values[3]);
+            Assert.NotEmpty(values[4]);
+            Assert.NotEmpty(values[5]);
         }
     }
 }
