@@ -66,12 +66,7 @@ namespace TARge25shop.KindergartenSeleniumTests
             Assert.NotEmpty(cells[6].Text.Trim());
         }
 
-        /// <summary>
-        /// Details test: loob objekti, avab Index tabelis selle rea Details lehe
-        /// ja kontrollib, et lehe pealkiri on "Kindergarten Details" ning kõik
-        /// väljad (grupp, lasteaed, laste arv, õpetaja) kattuvad sisestatuga
-        /// ja Created At ning Updated At on täidetud.
-        /// </summary>
+        
         /// <summary>
         /// Details test: loob objekti, avab Index tabelis selle rea Details lehe
         /// ja kontrollib, et lehe pealkiri on "Kindergarten Details" ning kõik
@@ -88,6 +83,31 @@ namespace TARge25shop.KindergartenSeleniumTests
 
             Assert.Equal("Kindergarten Details", _driver.FindElement(By.TagName("h1")).Text.Trim());
             AssertDetailsValues(data);
+        }
+
+        /// <summary>
+        /// Update test: loob objekti, avab selle Update lehe, muudab kõiki nelja välja,
+        /// salvestab ja kontrollib, et Index tabelis on uute väärtustega rida,
+        /// vana grupinime enam ei ole ning Details leht näitab uusi väärtusi.
+        /// </summary>
+        [Fact]
+        public void Update_ShouldSaveChangedValues()
+        {
+            var oldData = NewData();
+            var newData = NewData() with { ChildrenCount = 35 };
+            CreateViaUi(oldData);
+
+            GetRow(oldData.GroupName).FindElement(By.LinkText("Update")).Click();
+            WaitForUrlContains("/Kindergarten/Update");
+            FillForm(newData);
+            Submit();
+            WaitForIndex();
+
+            Assert.True(RowExists(newData.GroupName), "Uut grupinime ei leitud Index tabelist.");
+            Assert.False(RowExists(oldData.GroupName), "Vana grupinimi on endiselt Index tabelis.");
+
+            OpenDetails(newData.GroupName);
+            AssertDetailsValues(newData);
         }
 
         // ------------------------------------------------------------------
