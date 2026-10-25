@@ -36,5 +36,82 @@ namespace TARge25shop.SeleniumTesting
             _driver.Quit();
             _driver.Dispose();
         }
+
+
+
+        // ------------------------------------------------------------------
+        // Abimeetodid
+        // ------------------------------------------------------------------
+
+        private static KindergartenData NewData()
+        {
+            var suffix = Guid.NewGuid().ToString("N")[..8];
+            return new KindergartenData(
+                $"Grupp-{suffix}",
+                $"Lasteaed-{suffix}",
+                20,
+                $"Opetaja-{suffix}");
+        }
+
+        private void GoToIndex()
+        {
+            _driver.Navigate().GoToUrl($"{BaseUrl}/Kindergarten");
+            WaitForIndex();
+        }
+
+        private void WaitForIndex()
+        {
+            _wait.Until(d => d.Url.TrimEnd('/').EndsWith("/Kindergarten", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void WaitForUrlContains(string part)
+        {
+            _wait.Until(d => d.Url.Contains(part, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void CreateViaUi(KindergartenData data)
+        {
+            GoToIndex();
+            _driver.FindElement(By.LinkText("Create")).Click();
+            WaitForUrlContains("/Kindergarten/Create");
+            FillForm(data);
+            Submit();
+            WaitForIndex();
+        }
+
+        private void FillForm(KindergartenData data)
+        {
+            SetField("GroupName", data.GroupName);
+            SetField("KindergartenName", data.KindergartenName);
+            SetField("ChildrenCount", data.ChildrenCount.ToString());
+            SetField("TeacherName", data.TeacherName);
+        }
+
+        private void SetField(string id, string value)
+        {
+            var field = _driver.FindElement(By.Id(id));
+            field.Clear();
+            field.SendKeys(value);
+        }
+
+        private void Submit()
+        {
+            _driver.FindElement(By.CssSelector("button[type='submit']")).Click();
+        }
+
+        private IWebElement GetRow(string groupName)
+        {
+            return _driver.FindElement(RowLocator(groupName));
+        }
+
+        private bool RowExists(string groupName)
+        {
+            return _driver.FindElements(RowLocator(groupName)).Count > 0;
+        }
+
+        private static By RowLocator(string groupName)
+        {
+            return By.XPath($"//table//tbody/tr[td[normalize-space(.)='{groupName}']]");
+        }
     }
 }
