@@ -237,6 +237,29 @@ namespace TARge25shop.KindergartenSeleniumTests
             Assert.Equal(data.TeacherName, cells[4].Text.Trim());
         }
 
+        /// <summary>
+        /// Originaaltest 4: kahe objekti loomine järjest. Kontrollib, et mõlemad objektid
+        /// on Index tabelis korraga olemas ning et Details nupp avab õige objekti
+        /// (teise objekti Details leht näitab teise objekti andmeid, mitte esimese omi).
+        /// </summary>
+        [Fact]
+        public void TwoKindergartens_ShouldBothBeListedAndDetailsOpenCorrectOne()
+        {
+            var first = NewData();
+            var second = NewData() with { ChildrenCount = 41 };
+
+            CreateViaUi(first);
+            CreateViaUi(second);
+
+            Assert.True(RowExists(first.GroupName), "Esimest objekti ei leitud.");
+            Assert.True(RowExists(second.GroupName), "Teist objekti ei leitud.");
+
+            OpenDetails(second.GroupName);
+            AssertDetailsValues(second);
+            var values = ReadDetailsValues();
+            Assert.NotEqual(first.GroupName, values[0]);
+        }
+
         // ------------------------------------------------------------------
         // Abimeetodid
         // ------------------------------------------------------------------
@@ -299,7 +322,9 @@ namespace TARge25shop.KindergartenSeleniumTests
 
         private IWebElement GetRow(string groupName)
         {
-            return _driver.FindElement(RowLocator(groupName));
+            var row = _driver.FindElement(RowLocator(groupName));
+            ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].scrollIntoView({block: 'center', behavior: 'instant'});", row);
+            return row;
         }
 
         private bool RowExists(string groupName)
