@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace TARge25shop.SeleniumTesting
+namespace TARge25shop.KindergartenSeleniumTests
 {
     public class KindergartenUITests: IDisposable
     {
