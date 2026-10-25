@@ -4,6 +4,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Xunit;
 
 namespace TARge25shop.SeleniumTesting
 {
@@ -35,6 +36,34 @@ namespace TARge25shop.SeleniumTesting
         {
             _driver.Quit();
             _driver.Dispose();
+        }
+
+        // ------------------------------------------------------------------
+        // CRUD testid
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Create test: avab Create vormi, täidab kõik neli välja, salvestab ja kontrollib,
+        /// et Index tabelisse tekkis uus rida, kus Group Name, Kindergarten Name,
+        /// Children Count ja Teacher Name on täpselt samad, mis sisestati,
+        /// ning Created Date ja Updated Date on täidetud.
+        /// </summary>
+        [Fact]
+        public void Create_ShouldAddNewKindergartenToIndex()
+        {
+            var data = NewData();
+
+            CreateViaUi(data);
+
+            Assert.True(RowExists(data.GroupName), "Uut objekti ei leitud Index tabelist.");
+
+            var cells = GetRow(data.GroupName).FindElements(By.TagName("td"));
+            Assert.Equal(data.GroupName, cells[1].Text.Trim());
+            Assert.Equal(data.KindergartenName, cells[2].Text.Trim());
+            Assert.Equal(data.ChildrenCount.ToString(), cells[3].Text.Trim());
+            Assert.Equal(data.TeacherName, cells[4].Text.Trim());
+            Assert.NotEmpty(cells[5].Text.Trim());
+            Assert.NotEmpty(cells[6].Text.Trim());
         }
 
 
