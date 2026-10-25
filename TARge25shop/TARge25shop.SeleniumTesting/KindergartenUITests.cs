@@ -8,7 +8,7 @@ using Xunit;
 
 namespace TARge25shop.SeleniumTesting
 {
-    public class KindergartenUITests
+    public class KindergartenUITests: IDisposable
     {
 
         private const string BaseUrl = "https://localhost:7036";
@@ -22,7 +22,7 @@ namespace TARge25shop.SeleniumTesting
             int ChildrenCount,
             string TeacherName);
 
-        public KindergartenUiTests()
+        public KindergartenUITests()
         {
             var options = new ChromeOptions();
             options.AcceptInsecureCertificates = true;
