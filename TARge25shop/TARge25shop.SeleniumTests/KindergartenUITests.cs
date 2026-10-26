@@ -214,6 +214,29 @@ namespace TARge25shop.SeleniumTests
             Assert.Equal(data.ChildrenCount.ToString(), _driver.FindElement(By.Id("ChildrenCount")).GetAttribute("value"));
             Assert.Equal(data.TeacherName, _driver.FindElement(By.Id("TeacherName")).GetAttribute("value"));
         }
+
+        /// <summary>
+        /// Originaaltest 3: Delete lehel Cancel nupule vajutamine ei kustuta objekti.
+        /// Kontrollib, et pärast Cancel'it ollakse tagasi Index lehel
+        /// ja objekt on tabelis täpselt samade väärtustega alles.
+        /// </summary>
+        [Fact]
+        public void DeleteCancel_ShouldNotRemoveKindergarten()
+        {
+            var data = NewData();
+            CreateViaUi(data);
+
+            GetRow(data.GroupName).FindElement(By.LinkText("Delete")).Click();
+            WaitForUrlContains("/Kindergarten/Delete");
+            _driver.FindElement(By.LinkText("Cancel")).Click();
+            WaitForIndex();
+
+            Assert.True(RowExists(data.GroupName), "Objekt kadus, kuigi vajutati Cancel.");
+            var cells = GetRow(data.GroupName).FindElements(By.TagName("td"));
+            Assert.Equal(data.KindergartenName, cells[2].Text.Trim());
+            Assert.Equal(data.ChildrenCount.ToString(), cells[3].Text.Trim());
+            Assert.Equal(data.TeacherName, cells[4].Text.Trim());
+        }
         // ------------------------------------------------------------------
         // Abimeetodid
         // ---------
