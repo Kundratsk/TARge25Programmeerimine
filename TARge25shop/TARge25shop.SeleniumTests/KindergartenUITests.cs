@@ -109,6 +109,33 @@ namespace TARge25shop.SeleniumTests
             AssertDetailsValues(newData);
         }
 
+
+        /// <summary>
+        /// Delete test: loob objekti, avab selle Delete lehe, kontrollib et kuvatud andmed
+        /// on õige objekti omad, kinnitab kustutamise ja kontrollib, et rida
+        /// on Index tabelist kadunud.
+        /// </summary>
+        [Fact]
+        public void Delete_ShouldRemoveKindergartenFromIndex()
+        {
+            var data = NewData();
+            CreateViaUi(data);
+
+            GetRow(data.GroupName).FindElement(By.LinkText("Delete")).Click();
+            WaitForUrlContains("/Kindergarten/Delete");
+
+            Assert.Equal("Delete Kindergarten", _driver.FindElement(By.TagName("h1")).Text.Trim());
+            var values = ReadDetailsValues();
+            Assert.Equal(data.GroupName, values[0]);
+            Assert.Equal(data.KindergartenName, values[1]);
+            Assert.Equal(data.ChildrenCount.ToString(), values[2]);
+            Assert.Equal(data.TeacherName, values[3]);
+
+            _driver.FindElement(By.CssSelector("form button[type='submit']")).Click();
+            WaitForIndex();
+
+            Assert.False(RowExists(data.GroupName), "Kustutatud objekt on endiselt Index tabelis.");
+        }
         // ------------------------------------------------------------------
         // Abimeetodid
         // ---------
