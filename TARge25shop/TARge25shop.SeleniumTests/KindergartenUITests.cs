@@ -136,6 +136,44 @@ namespace TARge25shop.SeleniumTests
 
             Assert.False(RowExists(data.GroupName), "Kustutatud objekt on endiselt Index tabelis.");
         }
+
+        /// <summary>
+        /// Terve elutsükli test ühe ja sama objektiga: loob objekti, vaatab Details lehte
+        /// (jätab objekti Id meelde), muudab objekti, vaatab uuesti Details lehte
+        /// ja kontrollib, et Id on sama ning väärtused uued, ning lõpuks kustutab
+        /// objekti ja kontrollib, et seda enam ei ole.
+        /// </summary>
+        [Fact]
+        public void FullCrudFlow_ShouldWorkOnSameObject()
+        {
+            var created = NewData();
+            var updated = NewData() with { ChildrenCount = 28 };
+
+            CreateViaUi(created);
+            OpenDetails(created.GroupName);
+            AssertDetailsValues(created);
+            var idAfterCreate = GetIdFromUrl();
+
+            _driver.FindElement(By.LinkText("Update")).Click();
+            WaitForUrlContains("/Kindergarten/Update");
+            FillForm(updated);
+            Submit();
+            WaitForIndex();
+
+            OpenDetails(updated.GroupName);
+            AssertDetailsValues(updated);
+            Assert.Equal(idAfterCreate, GetIdFromUrl());
+
+            GoToIndex();
+            GetRow(updated.GroupName).FindElement(By.LinkText("Delete")).Click();
+            WaitForUrlContains("/Kindergarten/Delete");
+            Assert.Equal(idAfterCreate, GetIdFromUrl());
+            _driver.FindElement(By.CssSelector("form button[type='submit']")).Click();
+            WaitForIndex();
+
+            Assert.False(RowExists(updated.GroupName), "Objekt ei kustunud.");
+            Assert.False(RowExists(created.GroupName), "Vana nimega objekt ilmus tagasi.");
+        }
         // ------------------------------------------------------------------
         // Abimeetodid
         // ---------
