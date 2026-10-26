@@ -37,7 +37,6 @@ namespace TARge25shop.SeleniumTests
             _driver.Quit();
             _driver.Dispose();
         }
-    }
     // ------------------------------------------------------------------
     // Abimeetodid
     // ---------
@@ -56,6 +55,10 @@ namespace TARge25shop.SeleniumTests
             _driver.Navigate().GoToUrl($"{BaseUrl}/Kindergarten");
             WaitForIndex();
         }
-
+        private void WaitForIndex()
+        {
+            _wait.Until(d => d.Url.TrimEnd('/').EndsWith("/Kindergarten", StringComparison.OrdinalIgnoreCase));
+        }
 
     }
+}
