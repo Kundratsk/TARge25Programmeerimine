@@ -38,13 +38,39 @@ namespace TARge25shop.SeleniumTests
             _driver.Dispose();
         }
 
+        // ------------------------------------------------------------------
+        // CRUD testid
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Create test: avab Create vormi, täidab kõik neli välja, salvestab ja kontrollib,
+        /// et Index tabelisse tekkis uus rida, kus Group Name, Kindergarten Name,
+        /// Children Count ja Teacher Name on täpselt samad, mis sisestati,
+        /// ning Created Date ja Updated Date on täidetud.
+        /// </summary>
+        [Fact]
+        public void Create_ShouldAddNewKindergartenToIndex()
+        {
+            var data = NewData();
+
+            CreateViaUi(data);
+
+            Assert.True(RowExists(data.GroupName), "Uut objekti ei leitud Index tabelist.");
+
+            var cells = GetRow(data.GroupName).FindElements(By.TagName("td"));
+            Assert.Equal(data.GroupName, cells[1].Text.Trim());
+            Assert.Equal(data.KindergartenName, cells[2].Text.Trim());
+            Assert.Equal(data.ChildrenCount.ToString(), cells[3].Text.Trim());
+            Assert.Equal(data.TeacherName, cells[4].Text.Trim());
+            Assert.NotEmpty(cells[5].Text.Trim());
+            Assert.NotEmpty(cells[6].Text.Trim());
+        }
 
 
-
-    // ------------------------------------------------------------------
-    // Abimeetodid
-    // ---------
-    private static KindergartenData NewData()
+        // ------------------------------------------------------------------
+        // Abimeetodid
+        // ---------
+        private static KindergartenData NewData()
         {
             var suffix = Guid.NewGuid().ToString("N")[..8];
             return new KindergartenData(
