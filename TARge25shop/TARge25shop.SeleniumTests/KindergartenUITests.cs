@@ -106,5 +106,19 @@ namespace TARge25shop.SeleniumTests
         {
             return _driver.FindElements(RowLocator(groupName)).Count > 0;
         }
+        private static By RowLocator(string groupName)
+        {
+            return By.XPath($"//table//tbody/tr[td[normalize-space(.)='{groupName}']]");
+        }
+        private void OpenDetails(string groupName)
+        {
+            if (!_driver.Url.TrimEnd('/').EndsWith("/Kindergarten", StringComparison.OrdinalIgnoreCase))
+            {
+                GoToIndex();
+            }
+
+            GetRow(groupName).FindElement(By.LinkText("Details")).Click();
+            WaitForUrlContains("/Kindergarten/Details");
+        }
     }
 }
