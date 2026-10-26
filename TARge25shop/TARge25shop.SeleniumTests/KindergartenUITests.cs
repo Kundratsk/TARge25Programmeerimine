@@ -84,5 +84,11 @@ namespace TARge25shop.SeleniumTests
             SetField("ChildrenCount", data.ChildrenCount.ToString());
             SetField("TeacherName", data.TeacherName);
         }
+        private void SetField(string id, string value)
+        {
+            var field = _driver.FindElement(By.Id(id));
+            field.Clear();
+            field.SendKeys(value);
+        }
     }
 }
