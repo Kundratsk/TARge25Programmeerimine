@@ -38,3 +38,24 @@ namespace TARge25shop.SeleniumTests
             _driver.Dispose();
         }
     }
+    // ------------------------------------------------------------------
+    // Abimeetodid
+    // ---------
+    private static KindergartenData NewData()
+        {
+            var suffix = Guid.NewGuid().ToString("N")[..8];
+            return new KindergartenData(
+                $"Grupp-{suffix}",
+                $"Lasteaed-{suffix}",
+                20,
+                $"Opetaja-{suffix}");
+        }
+
+        private void GoToIndex()
+        {
+            _driver.Navigate().GoToUrl($"{BaseUrl}/Kindergarten");
+            WaitForIndex();
+        }
+
+
+    }
