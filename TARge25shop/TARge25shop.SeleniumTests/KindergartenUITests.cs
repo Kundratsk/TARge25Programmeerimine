@@ -84,6 +84,30 @@ namespace TARge25shop.SeleniumTests
             AssertDetailsValues(data);
         }
 
+        /// <summary>
+        /// Update test: loob objekti, avab selle Update lehe, muudab kõiki nelja välja,
+        /// salvestab ja kontrollib, et Index tabelis on uute väärtustega rida,
+        /// vana grupinime enam ei ole ning Details leht näitab uusi väärtusi.
+        /// </summary>
+        [Fact]
+        public void Update_ShouldSaveChangedValues()
+        {
+            var oldData = NewData();
+            var newData = NewData() with { ChildrenCount = 35 };
+            CreateViaUi(oldData);
+
+            GetRow(oldData.GroupName).FindElement(By.LinkText("Update")).Click();
+            WaitForUrlContains("/Kindergarten/Update");
+            FillForm(newData);
+            Submit();
+            WaitForIndex();
+
+            Assert.True(RowExists(newData.GroupName), "Uut grupinime ei leitud Index tabelist.");
+            Assert.False(RowExists(oldData.GroupName), "Vana grupinimi on endiselt Index tabelis.");
+
+            OpenDetails(newData.GroupName);
+            AssertDetailsValues(newData);
+        }
 
         // ------------------------------------------------------------------
         // Abimeetodid
