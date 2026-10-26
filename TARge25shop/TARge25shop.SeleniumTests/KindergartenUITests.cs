@@ -77,5 +77,12 @@ namespace TARge25shop.SeleniumTests
             Submit();
             WaitForIndex();
         }
+        private void FillForm(KindergartenData data)
+        {
+            SetField("GroupName", data.GroupName);
+            SetField("KindergartenName", data.KindergartenName);
+            SetField("ChildrenCount", data.ChildrenCount.ToString());
+            SetField("TeacherName", data.TeacherName);
+        }
     }
 }
