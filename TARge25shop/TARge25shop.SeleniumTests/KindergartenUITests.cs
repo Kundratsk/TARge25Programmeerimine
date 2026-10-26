@@ -90,5 +90,21 @@ namespace TARge25shop.SeleniumTests
             field.Clear();
             field.SendKeys(value);
         }
+        private void Submit()
+        {
+            _driver.FindElement(By.CssSelector("button[type='submit']")).Click();
+        }
+
+        private IWebElement GetRow(string groupName)
+        {
+            var row = _driver.FindElement(RowLocator(groupName));
+            ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].scrollIntoView({block: 'center', behavior: 'instant'});", row);
+            return row;
+        }
+
+        private bool RowExists(string groupName)
+        {
+            return _driver.FindElements(RowLocator(groupName)).Count > 0;
+        }
     }
 }
