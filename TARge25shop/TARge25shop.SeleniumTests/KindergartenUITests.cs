@@ -174,6 +174,25 @@ namespace TARge25shop.SeleniumTests
             Assert.False(RowExists(updated.GroupName), "Objekt ei kustunud.");
             Assert.False(RowExists(created.GroupName), "Vana nimega objekt ilmus tagasi.");
         }
+
+        /// <summary>
+        /// Originaaltest 1: Index lehel Create nupule vajutades avaneb tühi Create vorm.
+        /// Kontrollib pealkirja "Create Kindergarten", et tekstiväljad on tühjad
+        /// ja Children Count on vaikeväärtusel 0.
+        /// </summary>
+        [Fact]
+        public void CreateForm_ShouldOpenEmptyWithCorrectTitle()
+        {
+            GoToIndex();
+            _driver.FindElement(By.LinkText("Create")).Click();
+            WaitForUrlContains("/Kindergarten/Create");
+
+            Assert.Equal("Create Kindergarten", _driver.FindElement(By.TagName("h1")).Text.Trim());
+            Assert.Equal("", _driver.FindElement(By.Id("GroupName")).GetAttribute("value"));
+            Assert.Equal("", _driver.FindElement(By.Id("KindergartenName")).GetAttribute("value"));
+            Assert.Equal("0", _driver.FindElement(By.Id("ChildrenCount")).GetAttribute("value"));
+            Assert.Equal("", _driver.FindElement(By.Id("TeacherName")).GetAttribute("value"));
+        }
         // ------------------------------------------------------------------
         // Abimeetodid
         // ---------
