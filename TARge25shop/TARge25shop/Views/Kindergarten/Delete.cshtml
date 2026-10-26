@@ -4,78 +4,439 @@
     ViewData["Title"] = "Delete Kindergarten";
 }
 
-<h1>Delete Kindergarten</h1>
+<style>
+    .kg-delete-page {
+        background: #f7f8fc;
+        min-height: 80vh;
+        padding: 32px;
+        border-radius: 20px;
+        color: #20243a;
+    }
 
-<h3>Are you sure you want to delete this?</h3>
+    .kg-delete-header {
+        margin-bottom: 28px;
+    }
 
-<div>
-    <dl class="row">
+    .kg-delete-title {
+        font-size: 30px;
+        font-weight: 750;
+        letter-spacing: -1px;
+        margin: 0;
+    }
 
-        <dt class="col-sm-3">
-            Group Name
-        </dt>
-        <dd class="col-sm-9">
-            @Model.GroupName
-        </dd>
+    .kg-delete-subtitle {
+        color: #858ba3;
+        font-size: 14px;
+        margin: 8px 0 0;
+    }
 
-        <dt class="col-sm-3">
-            Kindergarten Name
-        </dt>
-        <dd class="col-sm-9">
-            @Model.KindergartenName
-        </dd>
+    .kg-warning {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 18px 20px;
+        background: #fff1f1;
+        border: 1px solid #ffdada;
+        border-radius: 14px;
+        margin-bottom: 24px;
+    }
 
-        <dt class="col-sm-3">
-            Children Count
-        </dt>
-        <dd class="col-sm-9">
-            @Model.ChildrenCount
-        </dd>
+    .kg-warning-icon {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #ffe0e0;
+        color: #d44747;
+        font-size: 20px;
+    }
 
-        <dt class="col-sm-3">
-            Teacher Name
-        </dt>
-        <dd class="col-sm-9">
-            @Model.TeacherName
-        </dd>
+    .kg-warning-title {
+        color: #b92e2e;
+        font-size: 15px;
+        font-weight: 750;
+        margin: 0 0 5px;
+    }
 
-        <dt class="col-sm-3">
-            Images
-        </dt>
-        <dd class="col-sm-9">
-            @if (Model.Image.Count == 0)
-            {
-                <span class="text-muted">No images</span>
-            }
-            else
-            {
-                <div class="d-flex flex-wrap gap-3">
-                    @foreach (var img in Model.Image)
-                    {
-                        <img src="@img.ImageData"
-                             alt="@img.ImageTitle"
-                             style="height:120px; width:auto;"
-                             class="img-thumbnail" />
-                    }
+    .kg-warning-text {
+        color: #8f4a4a;
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .kg-delete-card {
+        background: white;
+        border: 1px solid #eceef5;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 3px 12px #252a440a;
+    }
+
+    .kg-card-header {
+        padding: 22px 24px;
+        border-bottom: 1px solid #f0f1f6;
+    }
+
+    .kg-card-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .kg-card-description {
+        font-size: 13px;
+        color: #858ba3;
+        margin: 5px 0 0;
+    }
+
+    .kg-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 8px 24px;
+    }
+
+    .kg-info-item {
+        padding: 20px 12px;
+        border-bottom: 1px solid #f0f1f6;
+        min-width: 0;
+    }
+
+        .kg-info-item:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
+
+    .kg-info-label {
+        color: #858ba3;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .kg-info-value {
+        color: #292d45;
+        font-size: 15px;
+        font-weight: 650;
+        overflow-wrap: anywhere;
+    }
+
+    .kg-group-value {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .kg-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eeebff;
+        color: #6257e8;
+        font-size: 13px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .kg-children-badge {
+        display: inline-block;
+        background: #e8f7ef;
+        color: #238653;
+        padding: 7px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .kg-image-count {
+        background: #eeebff;
+        color: #6257d9;
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .kg-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 16px;
+        padding: 24px;
+    }
+
+    .kg-image-card {
+        border: 1px solid #eceef5;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fafbfe;
+    }
+
+    .kg-image-frame {
+        height: 145px;
+        background: #f0f1f7;
+        overflow: hidden;
+    }
+
+        .kg-image-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .kg-image-caption {
+        padding: 11px 13px;
+        color: #454b63;
+        font-size: 13px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .kg-empty-images {
+        padding: 35px 20px;
+        text-align: center;
+        color: #858ba3;
+        font-size: 14px;
+    }
+
+        .kg-empty-images i {
+            display: block;
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+    .kg-delete-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        padding-top: 4px;
+    }
+
+    .kg-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 19px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .kg-btn-danger {
+        background: #d94747;
+        color: white;
+        border-color: #d94747;
+    }
+
+        .kg-btn-danger:hover {
+            background: #bd3030;
+            border-color: #bd3030;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px #d9474730;
+        }
+
+    .kg-btn-cancel {
+        background: white;
+        color: #555b74;
+        border-color: #e3e6ef;
+    }
+
+        .kg-btn-cancel:hover {
+            background: #f0f1f7;
+            color: #292d45;
+        }
+
+    @@media (max-width: 768px) {
+        .kg-delete-page {
+            padding: 18px;
+        }
+
+        .kg-delete-title {
+            font-size: 25px;
+        }
+
+        .kg-info-grid {
+            grid-template-columns: 1fr;
+            padding: 8px 18px;
+        }
+
+        .kg-info-item:nth-last-child(-n+2) {
+            border-bottom: 1px solid #f0f1f6;
+        }
+
+        .kg-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .kg-card-header {
+            padding: 18px;
+        }
+
+        .kg-gallery {
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            padding: 18px;
+            gap: 12px;
+        }
+
+        .kg-image-frame {
+            height: 125px;
+        }
+
+        .kg-delete-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .kg-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="kg-delete-page">
+
+    <div class="kg-delete-header">
+        <h1 class="kg-delete-title">Delete kindergarten group</h1>
+        <p class="kg-delete-subtitle">
+            Review the group information before confirming deletion.
+        </p>
+    </div>
+
+    <div class="kg-warning">
+        <div class="kg-warning-icon">
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+
+        <div>
+            <h2 class="kg-warning-title">Are you sure you want to delete this group?</h2>
+            <p class="kg-warning-text">
+                This action may permanently remove the group and its associated
+                images. Please verify the information below before continuing.
+            </p>
+        </div>
+    </div>
+
+    <div class="kg-delete-card">
+        <div class="kg-card-header">
+            <h2 class="kg-card-title">Group information</h2>
+            <p class="kg-card-description">
+                Check that this is the correct group before deleting it.
+            </p>
+        </div>
+
+        <div class="kg-info-grid">
+
+            <div class="kg-info-item">
+                <div class="kg-info-label">Group name</div>
+                <div class="kg-info-value kg-group-value">
+                    <div class="kg-avatar">
+                        @(string.IsNullOrWhiteSpace(Model.GroupName)
+                            ? "KG"
+                            : Model.GroupName.Length >= 2
+                                ? Model.GroupName.Substring(0, 2).ToUpper()
+                                : Model.GroupName.ToUpper())
+                    </div>
+                    <span>@Model.GroupName</span>
                 </div>
-            }
-        </dd>
+            </div>
 
-    </dl>
+            <div class="kg-info-item">
+                <div class="kg-info-label">Kindergarten name</div>
+                <div class="kg-info-value">
+                    @Model.KindergartenName
+                </div>
+            </div>
+
+            <div class="kg-info-item">
+                <div class="kg-info-label">Children count</div>
+                <div class="kg-info-value">
+                    <span class="kg-children-badge">
+                        @Model.ChildrenCount children
+                    </span>
+                </div>
+            </div>
+
+            <div class="kg-info-item">
+                <div class="kg-info-label">Teacher name</div>
+                <div class="kg-info-value">
+                    @Model.TeacherName
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="kg-delete-card">
+        <div class="kg-card-header d-flex justify-content-between align-items-center gap-3">
+            <div>
+                <h2 class="kg-card-title">Group images</h2>
+                <p class="kg-card-description">
+                    Images associated with this group.
+                </p>
+            </div>
+
+            <span class="kg-image-count">
+                @(Model.Image?.Count ?? 0) images
+            </span>
+        </div>
+
+        @if (Model.Image == null || Model.Image.Count == 0)
+        {
+            <div class="kg-empty-images">
+                <i class="bi bi-image"></i>
+                No images have been uploaded.
+            </div>
+        }
+        else
+        {
+            <div class="kg-gallery">
+                @foreach (var img in Model.Image)
+                {
+                    <div class="kg-image-card">
+                        <div class="kg-image-frame">
+                            <img src="@img.ImageData"
+                                 alt="@img.ImageTitle"
+                                 loading="lazy" />
+                        </div>
+
+                        <div class="kg-image-caption">
+                            @(string.IsNullOrWhiteSpace(img.ImageTitle)
+                                ? "Untitled image"
+                                : img.ImageTitle)
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 
     <form asp-action="DeleteConfirmed" method="post">
-
         <input type="hidden" asp-for="Id" />
 
-        <button type="submit"
-                class="btn btn-danger">
-            Delete
-        </button>
+        <div class="kg-delete-actions">
+            <button type="submit" class="kg-btn kg-btn-danger">
+                <i class="bi bi-trash3"></i>
+                Confirm deletion
+            </button>
 
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
-
+            <a asp-action="Index" class="kg-btn kg-btn-cancel">
+                <i class="bi bi-arrow-left"></i>
+                Cancel and go back
+            </a>
+        </div>
     </form>
+
 </div>

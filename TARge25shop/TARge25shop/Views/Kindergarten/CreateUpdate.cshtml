@@ -1,79 +1,530 @@
 ﻿@model TARge25shop.Models.Kindergarten.KindergartenCreateUpdateViewModel
 
 @{
-    ViewData["Title"] = Model.Id == null ? "Create Kindergarten" : "Edit Kindergarten";
+    var isEdit = Model.Id != null;
+    ViewData["Title"] = isEdit ? "Edit Kindergarten" : "Create Kindergarten";
 }
 
-<h1>@ViewData["Title"]</h1>
+<style>
+    .kg-form-page {
+        background: #f7f8fc;
+        min-height: 80vh;
+        padding: 32px;
+        border-radius: 20px;
+        color: #20243a;
+    }
 
-<form asp-action="@(Model.Id == null ? "Create" : "Update")"
-      method="post"
-      enctype="multipart/form-data">
+    .kg-form-header {
+        margin-bottom: 28px;
+    }
 
-    <input type="hidden" asp-for="Id" />
+    .kg-form-title {
+        font-size: 30px;
+        font-weight: 750;
+        letter-spacing: -1px;
+        margin: 0;
+    }
 
-    <div class="mb-3">
-        <label asp-for="GroupName" class="form-label">Group Name</label>
-        <input asp-for="GroupName" class="form-control" />
-        <span asp-validation-for="GroupName" class="text-danger"></span>
-    </div>
+    .kg-form-subtitle {
+        color: #858ba3;
+        font-size: 14px;
+        margin: 8px 0 0;
+    }
 
-    <div class="mb-3">
-        <label asp-for="KindergartenName" class="form-label">Kindergarten Name</label>
-        <input asp-for="KindergartenName" class="form-control" />
-        <span asp-validation-for="KindergartenName" class="text-danger"></span>
-    </div>
+    .kg-form-card {
+        background: white;
+        border: 1px solid #eceef5;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 3px 12px #252a440a;
+    }
 
-    <div class="mb-3">
-        <label asp-for="ChildrenCount" class="form-label">Children Count</label>
-        <input asp-for="ChildrenCount" type="number" class="form-control" />
-        <span asp-validation-for="ChildrenCount" class="text-danger"></span>
-    </div>
+    .kg-form-card-header {
+        padding: 22px 24px;
+        border-bottom: 1px solid #f0f1f6;
+    }
 
-    <div class="mb-3">
-        <label asp-for="TeacherName" class="form-label">Teacher Name</label>
-        <input asp-for="TeacherName" class="form-control" />
-        <span asp-validation-for="TeacherName" class="text-danger"></span>
-    </div>
+    .kg-form-card-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0;
+    }
 
-    <div class="mb-3">
-        <label for="Files" class="form-label">Kindergarten images</label>
-        <input type="file"
-               id="Files"
-               name="Files"
-               class="form-control"
-               accept="image/*"
-               multiple />
-        <div class="form-text">You can select multiple images.</div>
-    </div>
+    .kg-form-card-description {
+        color: #858ba3;
+        font-size: 13px;
+        margin: 5px 0 0;
+    }
 
-    <button type="submit" class="btn btn-primary">Save</button>
+    .kg-form-body {
+        padding: 26px 24px;
+    }
 
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</form>
+    .kg-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 23px 22px;
+    }
 
-@if (Model.Id != null && Model.Image.Count > 0)
-{
-    <hr />
-    <h4>Existing images</h4>
+    .kg-field {
+        min-width: 0;
+    }
 
-    <div class="d-flex flex-wrap gap-3">
-        @foreach (var img in Model.Image)
-        {
-            <form asp-action="RemoveImage" method="post" class="text-center">
-                <input type="hidden" name="ImageId" value="@img.ImageId" />
-                <input type="hidden" name="KindergartenId" value="@img.KindergartenId" />
+    .kg-label {
+        display: block;
+        color: #454b63;
+        font-size: 13px;
+        font-weight: 650;
+        margin-bottom: 9px;
+    }
 
-                <img src="@img.ImageData"
-                     alt="@img.ImageTitle"
-                     style="height:120px; width:auto; display:block;"
-                     class="img-thumbnail mb-2" />
+    .kg-required {
+        color: #d94747;
+    }
 
-                <button type="submit" class="btn btn-danger btn-sm">Delete image</button>
-            </form>
+    .kg-input {
+        display: block;
+        width: 100%;
+        min-height: 46px;
+        padding: 11px 13px;
+        border: 1px solid #e1e4ee;
+        border-radius: 10px;
+        background: #fff;
+        color: #292d45;
+        font-size: 14px;
+        outline: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .kg-input:focus {
+            border-color: #8278ed;
+            box-shadow: 0 0 0 3px #6257e81c;
         }
+
+        .kg-input::placeholder {
+            color: #a3a7b8;
+        }
+
+    .kg-input-file {
+        padding: 10px;
+        background: #fafbfe;
+    }
+
+    .kg-field-hint {
+        display: block;
+        color: #858ba3;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-top: 8px;
+    }
+
+    .kg-validation {
+        display: block;
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
+    .kg-upload-box {
+        border: 1px dashed #cfd2e3;
+        background: #fafbfe;
+        padding: 22px;
+        border-radius: 12px;
+    }
+
+    .kg-upload-title {
+        color: #454b63;
+        font-size: 13px;
+        font-weight: 650;
+        margin-bottom: 6px;
+    }
+
+    .kg-upload-description {
+        color: #858ba3;
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    .kg-form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .kg-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 11px 18px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .kg-btn-primary {
+        background: #6257e8;
+        color: white;
+    }
+
+        .kg-btn-primary:hover {
+            background: #5045d0;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px #6257e833;
+        }
+
+    .kg-btn-secondary {
+        background: white;
+        border-color: #e1e4ee;
+        color: #555b74;
+    }
+
+        .kg-btn-secondary:hover {
+            background: #f0f1f7;
+            color: #292d45;
+        }
+
+    .kg-image-count {
+        background: #eeebff;
+        color: #6257d9;
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .kg-image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+        gap: 16px;
+        padding: 24px;
+    }
+
+    .kg-image-card {
+        background: #fafbfe;
+        border: 1px solid #eceef5;
+        border-radius: 12px;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .kg-image-frame {
+        height: 150px;
+        background: #f0f1f7;
+        overflow: hidden;
+    }
+
+        .kg-image-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .kg-image-info {
+        padding: 12px;
+    }
+
+    .kg-image-title {
+        color: #454b63;
+        font-size: 13px;
+        font-weight: 650;
+        overflow-wrap: anywhere;
+        margin-bottom: 11px;
+    }
+
+    .kg-image-delete {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        padding: 9px 10px;
+        border: 1px solid #ffdada;
+        border-radius: 8px;
+        background: #fff0f0;
+        color: #d44747;
+        font-size: 12px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+        .kg-image-delete:hover {
+            background: #ffe0e0;
+            color: #b92e2e;
+        }
+
+    .kg-empty-images {
+        padding: 32px 20px;
+        text-align: center;
+        color: #858ba3;
+        font-size: 13px;
+    }
+
+        .kg-empty-images i {
+            display: block;
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+    .kg-form-footer {
+        color: #858ba3;
+        font-size: 12px;
+        margin-top: 16px;
+    }
+
+    @@media (max-width: 768px) {
+        .kg-form-page {
+            padding: 18px;
+        }
+
+        .kg-form-title {
+            font-size: 25px;
+        }
+
+        .kg-form-grid {
+            grid-template-columns: 1fr;
+            gap: 19px;
+        }
+
+        .kg-form-body {
+            padding: 20px 18px;
+        }
+
+        .kg-form-card-header {
+            padding: 18px;
+        }
+
+        .kg-image-gallery {
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            padding: 18px;
+            gap: 12px;
+        }
+
+        .kg-image-frame {
+            height: 125px;
+        }
+
+        .kg-form-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .kg-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="kg-form-page">
+
+    <div class="kg-form-header">
+        <h1 class="kg-form-title">
+            @(isEdit ? "Edit kindergarten group" : "Create kindergarten group")
+        </h1>
+
+        <p class="kg-form-subtitle">
+            @(isEdit
+                ? "Update the group information and manage its images."
+                : "Fill in the information below to create a new group.")
+        </p>
     </div>
-}
+
+    <form asp-action="@(isEdit ? "Update" : "Create")"
+          method="post"
+          enctype="multipart/form-data">
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="kg-form-card">
+            <div class="kg-form-card-header">
+                <h2 class="kg-form-card-title">Group information</h2>
+                <p class="kg-form-card-description">
+                    Enter the basic details about the kindergarten group.
+                </p>
+            </div>
+
+            <div class="kg-form-body">
+                <div class="kg-form-grid">
+
+                    <div class="kg-field">
+                        <label asp-for="GroupName" class="kg-label">
+                            Group name <span class="kg-required">*</span>
+                        </label>
+
+                        <input asp-for="GroupName"
+                               class="kg-input"
+                               placeholder="Enter group name" />
+
+                        <span asp-validation-for="GroupName"
+                              class="text-danger kg-validation"></span>
+                    </div>
+
+                    <div class="kg-field">
+                        <label asp-for="KindergartenName" class="kg-label">
+                            Kindergarten name <span class="kg-required">*</span>
+                        </label>
+
+                        <input asp-for="KindergartenName"
+                               class="kg-input"
+                               placeholder="Enter kindergarten name" />
+
+                        <span asp-validation-for="KindergartenName"
+                              class="text-danger kg-validation"></span>
+                    </div>
+
+                    <div class="kg-field">
+                        <label asp-for="ChildrenCount" class="kg-label">
+                            Number of children <span class="kg-required">*</span>
+                        </label>
+
+                        <input asp-for="ChildrenCount"
+                               type="number"
+                               min="0"
+                               class="kg-input"
+                               placeholder="Enter children count" />
+
+                        <span asp-validation-for="ChildrenCount"
+                              class="text-danger kg-validation"></span>
+                    </div>
+
+                    <div class="kg-field">
+                        <label asp-for="TeacherName" class="kg-label">
+                            Teacher name <span class="kg-required">*</span>
+                        </label>
+
+                        <input asp-for="TeacherName"
+                               class="kg-input"
+                               placeholder="Enter teacher name" />
+
+                        <span asp-validation-for="TeacherName"
+                              class="text-danger kg-validation"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="kg-form-card">
+            <div class="kg-form-card-header">
+                <h2 class="kg-form-card-title">Upload images</h2>
+                <p class="kg-form-card-description">
+                    Add one or more images associated with this group.
+                </p>
+            </div>
+
+            <div class="kg-form-body">
+                <div class="kg-upload-box">
+                    <div class="kg-upload-title">Select image files</div>
+
+                    <p class="kg-upload-description">
+                        You can select multiple images at once.
+                    </p>
+
+                    <input type="file"
+                           id="Files"
+                           name="Files"
+                           class="kg-input kg-input-file"
+                           accept="image/*"
+                           multiple />
+
+                    <span class="kg-field-hint">
+                        Supported formats depend on your server configuration.
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="kg-form-actions">
+            <button type="submit" class="kg-btn kg-btn-primary">
+                <i class="bi bi-check-lg"></i>
+                @(isEdit ? "Save changes" : "Create group")
+            </button>
+
+            <a asp-action="Index" class="kg-btn kg-btn-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Cancel
+            </a>
+        </div>
+
+        <p class="kg-form-footer">
+            Fields marked with * should be completed if required by your validation rules.
+        </p>
+    </form>
+
+    @if (isEdit)
+    {
+        <div class="kg-form-card" style="margin-top: 32px;">
+            <div class="kg-form-card-header d-flex justify-content-between align-items-center gap-3">
+                <div>
+                    <h2 class="kg-form-card-title">Existing images</h2>
+                    <p class="kg-form-card-description">
+                        Manage images already associated with this group.
+                    </p>
+                </div>
+
+                <span class="kg-image-count">
+                    @(Model.Image?.Count ?? 0) images
+                </span>
+            </div>
+
+            @if (Model.Image == null || Model.Image.Count == 0)
+            {
+                <div class="kg-empty-images">
+                    <i class="bi bi-image"></i>
+                    No existing images for this group.
+                </div>
+            }
+            else
+            {
+                <div class="kg-image-gallery">
+                    @foreach (var img in Model.Image)
+                    {
+                        <div class="kg-image-card">
+                            <div class="kg-image-frame">
+                                <img src="@img.ImageData"
+                                     alt="@img.ImageTitle"
+                                     loading="lazy" />
+                            </div>
+
+                            <div class="kg-image-info">
+                                <div class="kg-image-title">
+                                    @(string.IsNullOrWhiteSpace(img.ImageTitle)
+                                        ? "Untitled image"
+                                        : img.ImageTitle)
+                                </div>
+
+                                <form asp-action="RemoveImage" method="post">
+                                    <input type="hidden"
+                                           name="ImageId"
+                                           value="@img.ImageId" />
+
+                                    <input type="hidden"
+                                           name="KindergartenId"
+                                           value="@img.KindergartenId" />
+
+                                    <button type="submit" class="kg-image-delete">
+                                        <i class="bi bi-trash3"></i>
+                                        Delete image
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @section Scripts {
     @{
