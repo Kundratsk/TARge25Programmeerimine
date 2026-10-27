@@ -19,7 +19,7 @@ public class WeatherController : Controller
     {
         return View(new WeatherViewModel
         {
-            City = "Tallinn"
+            City = ""
         });
     }
 
