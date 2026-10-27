@@ -1,5 +1,28 @@
 ﻿@model TARge25shop.Models.Spaceship.SpaceshipCreateUpdateViewModel
 
+<style>
+
+
+    .kg-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 17px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: .2s ease;
+    }
+
+    .kg-btn-edit {
+        background: #6257e8;
+        color: white;
+    }
+
+</style>
 
 
 @if (Model.Id.HasValue) {
@@ -13,6 +36,8 @@ else
         Create
     </h1>
 }
+
+
 
 <form method="post" enctype="multipart/form-data">
     <input asp-for="Id" type="hidden"/>
@@ -67,12 +92,12 @@ else
     </div>
     @if (Model.Id.HasValue)
         {
-            <input asp-action="Update" asp-controller="spaceship" type="submit" class="btn btn-success" value="Update" />
+        <input asp-action="Update" asp-controller="spaceship" type="submit" class="kg-btn kg-btn-edit" value="Update" />
         }
         else
         {
-            <input asp-action="create" asp-controller="spaceship" type="submit" class="btn btn-success" value="Create" />
+        <input asp-action="create" asp-controller="spaceship" type="submit" class="kg-btn kg-btn-edit" value="Create" />
         }
 
-    <a asp-action="Index" asp-controller="spaceship" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Index" asp-controller="spaceship" class="kg-btn kg-btn-back">Back to List</a>
 </form>

@@ -1,10 +1,48 @@
 ﻿@model TARge25shop.Models.Spaceship.SpaceshipDeleteViewModel
 
+<style>
+    /* ---------- 3D laeva stseen ---------- */
+    .ship-stage {
+        position: relative;
+        height: clamp(320px, 50vh, 480px);
+        margin: 1rem 0 1.25rem;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: grab;
+        touch-action: pan-y;
+        user-select: none;
+        -webkit-user-select: none;
+        background: radial-gradient(ellipse at 50% 100%, #5a1a2a 0%, #2a1030 45%, #0b0618 100%);
+        box-shadow: inset 0 0 0 2px #dc3545;
+    }
+    .ship-stage.dragging { cursor: grabbing; }
+    .ship-stage canvas { display: block; width: 100%; height: 100%; }
+    .ship-hint {
+        position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; pointer-events: none;
+        color: rgba(245,233,208,.7); font-size: .8rem; letter-spacing: .08em;
+    }
+    .ship-fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; color: #f5e9d0; text-align: center; padding: 1rem; z-index: 6; }
+
+    /* valge sähvatus / tumenemine plahvatuse ajal */
+    .boom-overlay { position: absolute; inset: 0; background: #fff3c9; opacity: 0; pointer-events: none; z-index: 5; }
+</style>
+
 <div class="h1 text-danger">Delete Spaceship</div>
-<h3>Are you sure you want to delete this?</h3> 
+<h3>Are you sure you want to delete this?</h3>
 
 <div>
     <hr />
+
+    <!-- 3D mudel -->
+    <div class="ship-stage" id="shipStage"
+         data-name="@Model.Name"
+         data-power="@Convert.ToDouble(Model.EnginePower).ToString(System.Globalization.CultureInfo.InvariantCulture)"
+         data-crew="@Convert.ToInt32(Model.Crew)">
+        <div class="ship-fallback" id="shipFallback"></div>
+        <div class="boom-overlay" id="boomOverlay"></div>
+        <div class="ship-hint">Lohista laeva pööramiseks</div>
+    </div>
+
     <dl class="row">
         <dt class="col-sm-2">Name</dt>
         <dd class="col-sm-10">@Model.Name</dd>
@@ -21,12 +59,283 @@
     @foreach (var images in Model.Image)
     {
         <partial name="_Images" model="images" />
-        
     }
-    
 
-    <form asp-action="DeleteConfirmed" asp-controller="spaceship" asp-route-id="@Model.Id" method="post">
-        <button type="submit" class="btn btn-danger">Delete</button>
-        <a asp-action="index" asp-controller="spaceship" class="btn btn-primary">Back to List</a>
+    <form id="deleteForm" asp-action="DeleteConfirmed" asp-controller="spaceship" asp-route-id="@Model.Id" method="post">
+        <button type="submit" id="deleteBtn" class="btn btn-danger">Delete</button>
+        <a asp-action="index" asp-controller="spaceship" id="backBtn" class="btn btn-primary">Back to List</a>
     </form>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        var stage = document.getElementById('shipStage');
+        var fallback = document.getElementById('shipFallback');
+        var form = document.getElementById('deleteForm');
+        var delBtn = document.getElementById('deleteBtn');
+        var backBtn = document.getElementById('backBtn');
+        var overlay = document.getElementById('boomOverlay');
+
+        var explode = null;     // saab väärtuse alles siis, kui 3D stseen on edukalt üles ehitatud
+        var phase = 'idle';     // idle -> charge -> boom
+
+        /* Kui plahvatus pole valmis (3D ei tööta), saadetakse vorm tavapäraselt */
+        form.addEventListener('submit', function (e) {
+            if (phase !== 'idle') { e.preventDefault(); return; }
+            if (!explode) return;
+            e.preventDefault();
+            explode();
+        });
+
+        function showError(msg) {
+            fallback.textContent = msg;
+            fallback.style.display = 'flex';
+            console.error('[Delete 3D]', msg);
+        }
+
+        if (!stage) return;
+        if (!window.THREE) { showError('Three.js ei laadinud (kontrolli internetiühendust). Kustutamine töötab ilma plahvatuseta.'); return; }
+
+        try {
+            /* ================= KOHANDATAV ================= */
+            var MAX_POWER   = 1000;    // selle võimsusega (kW) on leek maksimaalse pikkusega
+            var MAX_WINDOWS = 36;      // maksimaalselt nii palju meeskonna aknaid
+            var AUTO_SPIN   = 0.0035;
+            var CHARGE_MS   = 450;     // kokkulaadimine enne plahvatust
+            var SUBMIT_MS   = 2500;    // millal vorm saadetakse (alates klõpsust)
+
+            var POWER = parseFloat(stage.dataset.power) || 0;
+            var CREW  = parseInt(stage.dataset.crew, 10) || 0;
+            var NAME  = stage.dataset.name || '';
+            var power01 = Math.max(0.12, Math.min(1, POWER / MAX_POWER));
+
+            /* ---------- Renderdaja, stseen, kaamera ---------- */
+            var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            stage.insertBefore(renderer.domElement, stage.firstChild);
+
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
+            var camBase = { x: 0, y: 2.4, z: 11.5 };
+            camera.position.set(camBase.x, camBase.y, camBase.z);
+            camera.lookAt(0, 0, 0);
+
+            /* ---------- Valgus ---------- */
+            scene.add(new THREE.AmbientLight(0x8a7aa8, 0.7));
+            var key = new THREE.DirectionalLight(0xfff0d0, 1.1); key.position.set(5, 8, 6); scene.add(key);
+            var rim = new THREE.DirectionalLight(0xff7a3c, 0.8); rim.position.set(-6, 2, -6); scene.add(rim);
+            var alarm = new THREE.PointLight(0xff2a2a, 0, 14); alarm.position.set(0, 2.2, 0); scene.add(alarm);   // vilkuv häirevalgus
+            var flashLight = new THREE.PointLight(0xffaa55, 0, 45); scene.add(flashLight);                       // plahvatuse sähvatus
+
+            /* ---------- Tähed ---------- */
+            var sp = new Float32Array(500 * 3);
+            for (var i = 0; i < 500; i++) {
+                var r = 40 + Math.random() * 40, th = Math.random() * 6.283, ph = Math.acos(2 * Math.random() - 1);
+                sp[i * 3] = r * Math.sin(ph) * Math.cos(th); sp[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th); sp[i * 3 + 2] = r * Math.cos(ph);
+            }
+            var sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+            scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 0.18 })));
+
+            /* ---------- Laev (nina on +Z suunas; sama mis Details vaates) ---------- */
+            var ship = new THREE.Group();
+            scene.add(ship);
+
+            var hash = 0; for (var c = 0; c < NAME.length; c++) { hash = (hash * 31 + NAME.charCodeAt(c)) % 360; }
+            var hullMat = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(hash / 360, 0.35, 0.58), metalness: 0.6, roughness: 0.35, side: THREE.DoubleSide });
+            var darkMat = new THREE.MeshStandardMaterial({ color: 0x2a2433, metalness: 0.7, roughness: 0.4 });
+
+            var body = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.8, 4, 28).rotateX(Math.PI / 2), hullMat); ship.add(body);
+            var nose = new THREE.Mesh(new THREE.ConeGeometry(0.6, 1.7, 28).rotateX(Math.PI / 2), hullMat); nose.position.z = 2.85; ship.add(nose);
+
+            var cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16),
+                new THREE.MeshStandardMaterial({ color: 0x66ccff, emissive: 0x114466, metalness: 0.9, roughness: 0.1 }));
+            cockpit.scale.set(0.9, 0.75, 1.5); cockpit.position.set(0, 0.52, 1.3); ship.add(cockpit);
+
+            var ws = new THREE.Shape();
+            ws.moveTo(0.5, 0); ws.lineTo(3.3, 1.8); ws.lineTo(3.3, 2.5); ws.lineTo(0.5, 1.8); ws.closePath();
+            var wingGeo = new THREE.ExtrudeGeometry(ws, { depth: 0.12, bevelEnabled: false }).rotateX(-Math.PI / 2);
+            var wingR = new THREE.Mesh(wingGeo, hullMat); wingR.position.set(0, -0.08, 0.5);
+            var wingL = wingR.clone(); wingL.scale.x = -1;
+            ship.add(wingR, wingL);
+
+            var fin = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.0, 1.1), hullMat);
+            fin.position.set(0, 0.85, -1.7); fin.rotation.x = -0.35; ship.add(fin);
+
+            var flames = [], enginePts = [];
+            var flameGeo = new THREE.ConeGeometry(0.26, 1, 16); flameGeo.translate(0, 0.5, 0); flameGeo.rotateX(-Math.PI / 2);
+            [-0.95, 0.95].forEach(function (x) {
+                var eng = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.38, 1.3, 20).rotateX(Math.PI / 2), darkMat);
+                eng.position.set(x, 0, -2.3); ship.add(eng);
+                var flame = new THREE.Mesh(flameGeo, new THREE.MeshBasicMaterial({ color: 0xff9a3c, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
+                flame.position.set(x, 0, -2.95); ship.add(flame); flames.push(flame);
+                var pl = new THREE.PointLight(0xff8a3c, 0.4 + power01 * 1.6, 7); pl.position.set(x, 0, -3.3); ship.add(pl); enginePts.push(pl);
+            });
+
+            var winMat = new THREE.MeshBasicMaterial({ color: 0xffe08a });
+            var total = Math.min(CREW, MAX_WINDOWS), perSide = Math.ceil(total / 2), rows = 3, cols = Math.max(1, Math.ceil(perSide / rows)), placed = 0;
+            [-1, 1].forEach(function (side) {
+                for (var k = 0; k < perSide && placed < total; k++, placed++) {
+                    var col = Math.floor(k / rows), row = k % rows;
+                    var z = 1.5 - col * (3.0 / Math.max(cols - 1, 1));
+                    var rad = 0.7 - 0.05 * z, ang = (row * 22 + 8) * Math.PI / 180;
+                    var w = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 8), winMat);
+                    w.position.set(side * rad * Math.cos(ang) * 1.02, rad * Math.sin(ang), z);
+                    ship.add(w);
+                }
+            });
+
+            /* ---------- Suurus ---------- */
+            var resize = function () {
+                var W = stage.clientWidth, H = stage.clientHeight;
+                renderer.setSize(W, H, false);
+                camera.aspect = W / H;
+                camBase.z = W < 520 ? 14.5 : 11.5;
+                camera.updateProjectionMatrix();
+            };
+            resize();
+            if (window.ResizeObserver) { new ResizeObserver(resize).observe(stage); } else { window.addEventListener('resize', resize); }
+
+            /* ---------- Pööramine lohistamisega ---------- */
+            var rotY = 0.7, rotX = 0.18, dragging = false, lx = 0, ly = 0;
+            stage.addEventListener('pointerdown', function (e) { if (phase !== 'idle') return; dragging = true; lx = e.clientX; ly = e.clientY; stage.classList.add('dragging'); stage.setPointerCapture(e.pointerId); });
+            stage.addEventListener('pointermove', function (e) {
+                if (!dragging) return;
+                rotY += (e.clientX - lx) * 0.01;
+                rotX = Math.max(-0.5, Math.min(0.6, rotX + (e.clientY - ly) * 0.006));
+                lx = e.clientX; ly = e.clientY;
+            });
+            var endDrag = function () { dragging = false; stage.classList.remove('dragging'); };
+            stage.addEventListener('pointerup', endDrag);
+            stage.addEventListener('pointercancel', endDrag);
+
+            /* ================= PLAHVATUS ================= */
+            var tClick = 0, tBoom = 0;
+            var debris = [], fire = null, fireVel = null, ring = null;
+
+            var startExplosion = function () {
+                phase = 'charge'; tClick = performance.now();
+                delBtn.disabled = true; delBtn.textContent = 'Boom…';
+                backBtn.style.pointerEvents = 'none'; backBtn.style.opacity = 0.5;
+                dragging = false;
+                setTimeout(function () { try { boom(); } catch (err) { console.error('[Delete 3D] boom', err); } }, CHARGE_MS);
+                setTimeout(function () { overlay.style.background = '#0b0618'; overlay.style.transition = 'opacity .5s'; overlay.style.opacity = 1; }, SUBMIT_MS - 550);
+                setTimeout(function () { form.submit(); }, SUBMIT_MS);   // form.submit() ei käivita submit-sündmust uuesti
+            };
+
+            var boom = function () {
+                phase = 'boom'; tBoom = performance.now();
+
+                // laeva tükid lendavad laiali
+                ship.children.forEach(function (m) {
+                    if (!m.isMesh || flames.indexOf(m) !== -1) return;
+                    var dir = m.position.clone();
+                    if (dir.length() < 0.2) dir.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+                    dir.normalize().add(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.3, Math.random() - 0.5).multiplyScalar(0.9)).normalize();
+                    m.userData.vel = dir.multiplyScalar(4 + Math.random() * 6);
+                    m.userData.spin = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(12);
+                    m.userData.s0 = m.scale.clone();
+                    debris.push(m);
+                });
+                flames.forEach(function (f) { f.visible = false; });
+                enginePts.forEach(function (p) { p.intensity = 0; });
+
+                // tulekera: osakesed
+                var N = 320, pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+                fireVel = new Float32Array(N * 3);
+                for (var i = 0; i < N; i++) {
+                    var d = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiplyScalar(2 + Math.random() * 8);
+                    fireVel[i * 3] = d.x; fireVel[i * 3 + 1] = d.y; fireVel[i * 3 + 2] = d.z;
+                    var cc = new THREE.Color().setHSL(0.04 + Math.random() * 0.1, 1, 0.5 + Math.random() * 0.2);
+                    col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b;
+                }
+                var fg = new THREE.BufferGeometry();
+                fg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                fg.setAttribute('color', new THREE.BufferAttribute(col, 3));
+                fire = new THREE.Points(fg, new THREE.PointsMaterial({ size: 0.45, vertexColors: true, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false }));
+                scene.add(fire);
+
+                // lööklaine
+                ring = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 64),
+                    new THREE.MeshBasicMaterial({ color: 0xffb060, transparent: true, opacity: 1, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }));
+                ring.lookAt(camera.position);
+                scene.add(ring);
+
+                // valge sähvatus
+                overlay.style.transition = 'opacity .06s'; overlay.style.opacity = 0.95;
+                setTimeout(function () { overlay.style.transition = 'opacity .9s ease-out'; overlay.style.opacity = 0; }, 90);
+            };
+
+            /* ---------- Renderdustsükkel ---------- */
+            var last = performance.now();
+            var frame = function (now) {
+                var dt = Math.min(0.05, (now - last) / 1000); last = now;
+
+                if (phase === 'idle') {
+                    if (!dragging) rotY += AUTO_SPIN;
+                    ship.position.y = Math.sin(now / 900) * 0.08;
+                    var len = (0.8 + power01 * 3.2) * (0.9 + Math.random() * 0.2);
+                    flames.forEach(function (f) { f.scale.set(0.9 + Math.random() * 0.2, 0.9 + Math.random() * 0.2, len); });
+                    alarm.intensity = 0.8 + Math.sin(now / 220) * 0.8;                      // vilkuv punane häire
+                }
+                else if (phase === 'charge') {
+                    var k = Math.min(1, (now - tClick) / CHARGE_MS);
+                    rotY += AUTO_SPIN + k * 0.04;
+                    ship.position.x = (Math.random() - 0.5) * 0.25 * k;                     // värisemine
+                    ship.position.y = (Math.random() - 0.5) * 0.25 * k;
+                    flames.forEach(function (f) { f.scale.set(1 + k, 1 + k, (2 + 3 * k) * (0.9 + Math.random() * 0.2)); });
+                    alarm.intensity = 2 + k * 4;
+                    camera.position.x = camBase.x + (Math.random() - 0.5) * 0.15 * k;
+                }
+                else { // boom
+                    var t = (now - tBoom) / 1000;
+                    rotY += AUTO_SPIN;
+                    debris.forEach(function (m) {
+                        m.position.addScaledVector(m.userData.vel, dt);
+                        m.rotation.x += m.userData.spin.x * dt; m.rotation.y += m.userData.spin.y * dt; m.rotation.z += m.userData.spin.z * dt;
+                        var s = Math.max(0.01, 1 - Math.max(0, t - 0.3) / 1.6);             // tükid kahanevad
+                        m.scale.copy(m.userData.s0).multiplyScalar(s);
+                    });
+                    if (fire) {
+                        var p = fire.geometry.attributes.position.array;
+                        for (var i2 = 0; i2 < p.length; i2++) p[i2] += fireVel[i2] * dt;
+                        fire.geometry.attributes.position.needsUpdate = true;
+                        fire.material.opacity = Math.max(0, 1 - t / 1.4);
+                        fire.material.size = 0.45 + t * 0.5;
+                    }
+                    if (ring) {
+                        var rs = 1 + t * 16;
+                        ring.scale.set(rs, rs, rs);
+                        ring.material.opacity = Math.max(0, 1 - t / 0.9);
+                    }
+                    flashLight.intensity = 14 * Math.exp(-t * 4);
+                    alarm.intensity = 0;
+                    var amp = 0.7 * Math.exp(-t * 2.8);                                     // ekraanivärin
+                    camera.position.x = camBase.x + (Math.random() - 0.5) * amp;
+                    camera.position.y = camBase.y + (Math.random() - 0.5) * amp;
+                }
+
+                ship.rotation.y = rotY;
+                ship.rotation.x = rotX;
+                camera.position.z = camBase.z;
+                if (phase === 'idle') { camera.position.x = camBase.x; camera.position.y = camBase.y; }
+                camera.lookAt(0, 0, 0);
+                renderer.render(scene, camera);
+                requestAnimationFrame(frame);
+            };
+            requestAnimationFrame(frame);
+
+            /* ---------- anime.js: laev lendab sisse ---------- */
+            if (window.anime) { anime({ targets: ship.position, z: [-22, 0], duration: 2000, easing: 'easeOutExpo' }); }
+
+            explode = startExplosion;   // alles nüüd on plahvatus valmis
+        } catch (err) {
+            showError('3D stseen ei käivitunud: ' + err.message);
+        }
+    })();
+    </script>
+}
