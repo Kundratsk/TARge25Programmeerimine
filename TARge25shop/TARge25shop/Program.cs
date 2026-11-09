@@ -32,6 +32,8 @@ namespace TARge25shop
             });
             builder.Services.AddHttpClient(); //uuri mis teeb
 
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

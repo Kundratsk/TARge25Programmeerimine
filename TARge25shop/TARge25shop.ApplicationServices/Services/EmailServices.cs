@@ -22,7 +22,7 @@ namespace TARge25shop.ApplicationServices.Services
         {
             var email = new MimeMessage();
             // set the sender and recipient addresses
-            email.From.Add(MailboxAddress.Parse());
+            email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUserName").Value));
             email.To.Add(MailboxAddress.Parse(dto.To));
             email.Subject = dto.Subject;
 
