@@ -1,14 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+using Microsoft.EntityFrameworkCore;
 using TARge25shop.Core.Domain;
+
 
 namespace TARge25shop.Data
 {
     //Nimetasime classi TARge25ShopContext, mis prärib DbContext klassi
-    public class TARge25ShopContext : DbContext
+    public class TARge25ShopContext : IdentityDbContext<ApplicationUser>
     {
         //All on konstruktor, mis pärib DbContext klassi
         public TARge25ShopContext (DbContextOptions<TARge25ShopContext> options) 
-            : base(options){ }
+            : base(options)
+        {
+
+        }
 
 
         //vaja lisada dbSet, mis on seotud meie domain klassiga 
@@ -18,6 +25,7 @@ namespace TARge25shop.Data
         public DbSet<FileToApi> FileToApis { get; set; }
         public DbSet<Realestate> Realestate { get; set; }
         public DbSet<FileToDatabase> FileToDatabases { get; set; }
+        //public DbSet<IdentityRole> ApplicationUsers { get; set; }
 
     }
 }

@@ -1,35 +1,49 @@
 ﻿@model TARge25shop.Models.Account.RegisterViewModel
 
-<div class="container mt-5" style="max-width: 500px;">
+<div class="container mt-5" style="max-width: 550px;">
     <div class="card shadow-sm p-4">
         <h2 class="text-center mb-4">Loo konto</h2>
 
         <form asp-action="Register" asp-controller="Account" method="post">
-            <!-- Üldiste või serveripoolsete vigade kuvamine -->
+            <!-- Serveripoolsete üldiste vigade kuvamine -->
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <!-- E-posti / Kasutajanime väli -->
+            <!-- Täisnimi -->
             <div class="mb-3">
-                <label asp-for="Email" class="form-label">E-posti aadress</label>
+                <label asp-for="Name" class="form-label">Täisnimi</label>
+                <input asp-for="Name" class="form-control" placeholder="Ees- ja perekonnanimi" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <!-- E-post (Kohustuslik) -->
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">E-posti aadress *</label>
                 <input asp-for="Email" type="email" class="form-control" placeholder="nimi@domeen.ee" required />
-                <span asp-validation-for="Email" class="text-danger fs-7"></span>
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
-            <!-- Parooli väli -->
+            <!-- Linn -->
             <div class="mb-3">
-                <label asp-for="Password" class="form-label">Parool</label>
+                <label asp-for="City" class="form-label">Linn</label>
+                <input asp-for="City" class="form-control" placeholder="Sinu kodulinn" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+
+            <!-- Parool (Kohustuslik) -->
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Parool *</label>
                 <input asp-for="Password" type="password" class="form-control" placeholder="Vali tugev parool" required />
-                <span asp-validation-for="Password" class="text-danger fs-7"></span>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <!-- Parooli kinnitamise väli -->
+            <!-- Parooli kinnitus -->
             <div class="mb-4">
-                <label asp-for="ConfirmPassword" class="form-label">Kinnita parool</label>
-                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Korda parooli" required />
-                <span asp-validation-for="ConfirmPassword" class="text-danger fs-7"></span>
+                <label asp-for="Confirmpassword" class="form-label">Kinnita parool *</label>
+                <input asp-for="Confirmpassword" type="password" class="form-control" placeholder="Korda parooli" required />
+                <span asp-validation-for="Confirmpassword" class="text-danger"></span>
             </div>
 
-            <!-- Registreerimise nupp -->
+            <!-- Nupp -->
             <button type="submit" class="btn btn-primary w-100 py-2">Registreeru</button>
         </form>
 
@@ -40,6 +54,6 @@
 </div>
 
 @section Scripts {
-    <!-- Aktiveerib kliendipoolse valideerimise (paroolide kattuvus jne kontrollitakse enne serverisse saatmist) -->
+    <!-- Aktiveerib kliendipoolse valideerimise (nt kontrollib paroolide kattuvust enne serverisse saatmist) -->
     <partial name="_ValidationScriptsPartial" />
 }
