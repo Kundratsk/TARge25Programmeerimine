@@ -1,0 +1,48 @@
+﻿@model TARge25shop.Models.Email.EmailViewModel
+
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="mb-4">E-kirja saatmine</h2>
+    
+    @if (TempData["Teade"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Teade"]
+        </div>
+    }
+    
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    }
+
+    <!-- enctype="multipart/form-data" on failide üleslaadimiseks kohustuslik -->
+    <form asp-action="SendEmail" asp-controller="Email" method="post" enctype="multipart/form-data">
+        
+        <div class="mb-3">
+            <label asp-for="To" class="form-label">Saaja e-post</label>
+            <input asp-for="To" type="email" class="form-control" placeholder="näide@domeen.ee" required />
+            <span asp-validation-for="To" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Subject" class="form-label">Teema</label>
+            <input asp-for="Subject" class="form-control" placeholder="Kirja pealkiri" required />
+            <span asp-validation-for="Subject" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Body" class="form-label">Sisu</label>
+            <textarea asp-for="Body" class="form-control" rows="6" placeholder="Kirjuta oma sõnum siia..." required></textarea>
+            <span asp-validation-for="Body" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Attachments" class="form-label">Manused (vali üks või mitu faili)</label>
+            <input asp-for="Attachments" type="file" class="form-control" multiple />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Saada e-kiri</button>
+    </form>
+</div>

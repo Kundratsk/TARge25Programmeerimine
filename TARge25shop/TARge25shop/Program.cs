@@ -30,6 +30,7 @@ namespace TARge25shop
                 client.BaseAddress =
                     new Uri("https://api.openweathermap.org/");
             });
+            builder.Services.AddScoped<IEmailServices, EmailServices>();
             builder.Services.AddHttpClient(); //uuri mis teeb
 
 
