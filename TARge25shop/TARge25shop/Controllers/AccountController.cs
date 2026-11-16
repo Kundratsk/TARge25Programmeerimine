@@ -124,7 +124,7 @@ namespace TARge25śhop.Controllers
                 "Issue", "Success",
                 "StatusMessage", "Registration Success",
                 "ActedOn", $"{user.Email}",
-                "CreatedAccountData", $"{user.Email}\n{user.City}\n[password hidden]\n[password hidden]"
+                "CreatedAccountData", $"{user.Email}\n{user.City}\n[password hidden]"
                 ];
         }
     }
