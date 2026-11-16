@@ -126,6 +126,7 @@ namespace TARge25śhop.Controllers
                 "ActedOn", $"{user.Email}",
                 "CreatedAccountData", $"{user.Email}\n{user.City}\n[password hidden]"
                 ];
+            return View();
         }
     }
 }
