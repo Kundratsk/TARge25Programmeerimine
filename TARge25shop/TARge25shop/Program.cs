@@ -4,6 +4,8 @@ using TARge25shop.Data;
 using Microsoft.EntityFrameworkCore;
 using TARge25shop.ServicesInterface;
 using TARge25shop.Services;
+using TARge25shop.Core.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace TARge25shop
 {
@@ -34,6 +36,9 @@ namespace TARge25shop
             builder.Services.AddHttpClient(); //uuri mis teeb
 
 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<TARge25ShopContext>()
+                .AddDefaultTokenProviders();
 
             var app = builder.Build();
 

@@ -4,8 +4,8 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-	  <UserSecretsId>1d826187-7832-48cc-8829-1e210d417a6a</UserSecretsId>
-  </PropertyGroup>
+		<UserSecretsId>1d826187-7832-48cc-8829-1e210d417a6a</UserSecretsId>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<Folder Include="ServicesInterface\" />
@@ -13,18 +13,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Fluent.Infrastructure" Version="2.0.0-beta-01" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
 
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.13" />
-
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
-
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.13">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -39,4 +35,3 @@
 	</ItemGroup>
 
 </Project>
-
