@@ -43,10 +43,17 @@ namespace TARge25shop
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 6;
+
+                options.Tokens.EmailConfirmationTokenProvider = "CustomEmailConfirmation";
+
+                options.Password.RequiredLength = 3;
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
             })
             .AddEntityFrameworkStores<TARge25ShopContext>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders()
+            .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("CustomEmailConfirmation");
 
 
             var app = builder.Build();
