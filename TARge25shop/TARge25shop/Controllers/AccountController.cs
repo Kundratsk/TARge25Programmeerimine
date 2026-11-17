@@ -7,6 +7,8 @@ using TARge25shop.Core.Dto;
 using TARge25shop.Core.ServiceInterface;
 using TARge25shop.Models.Account;
 using RegisterViewModel = TARge25shop.Models.Account.RegisterViewModel;
+using System.Diagnostics;
+using TARge25shop.Models;
 
 namespace TARge25śhop.Controllers
 {
@@ -95,7 +97,7 @@ namespace TARge25śhop.Controllers
                 // Implement registration logic here
                 // For example, create a new user and save it to the database
                 // Redirect to a success page or login page after successful registration
-                return RedirectToAction("Index", "Home");
+                return View(vm);
             }
             // If we got this far, something failed; redisplay the form
             return View();
@@ -126,7 +128,71 @@ namespace TARge25śhop.Controllers
                 "ActedOn", $"{user.Email}",
                 "CreatedAccountData", $"{user.Email}\n{user.City}\n[password hidden]"
                 ];
+
+            if (result.Succeeded)
+            {
+                errordatas =
+                [
+                "Area", "Accounts",
+                "Issue", "Success",
+                "StatusMessage", "Registration Success",
+                "ActedOn", $"{user.Email}",
+                "CreatedAccountData", $"{user.Email}\n{user.City}\n[password hidden]"
+                ];
+                ViewBag.ErrorMessage = errordatas;
+                return View();
+            }
+
+            ViewBag.ErrorDatas = errordatas;
+            ViewBag.ErrorTitles = "Email cannot be confirmed";
+            ViewBag.ErrorMessage = $"The user email with userid of {userId}, cannot be confirmed";
+            
+            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+
+        public async Task<IActionResult> Login(string? returnUrl)
+        {
             return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                
+                if (user != null && !user.EmailConfirmed && 
+                    (await _userManager.CheckPasswordAsync(user, model.Password)))
+                {
+                    ModelState.AddModelError(string.Empty, "Email not confirmed");
+                    return View(model);
+                }
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
+
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                if(result.IsLockedOut)
+                {
+                    return View("AccountLocked");
+                }
+
+                ModelState.AddModelError("", "Invalid login Attempt");
+            }
+
+            return View(model);
         }
     }
 }
