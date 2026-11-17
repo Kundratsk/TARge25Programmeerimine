@@ -9,6 +9,7 @@ using TARge25shop.Models.Account;
 using RegisterViewModel = TARge25shop.Models.Account.RegisterViewModel;
 using System.Diagnostics;
 using TARge25shop.Models;
+using System.Globalization;
 
 namespace TARge25śhop.Controllers
 {
@@ -230,6 +231,27 @@ namespace TARge25śhop.Controllers
                 }
                 return View("ForgotPasswordConfirmation");
             }
+            return View(model);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token) )
+            {
+                ModelState.AddModelError(string.Empty, "Invalid password reset token");
+
+                
+            }
+            return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
             return View(model);
         }
     }
