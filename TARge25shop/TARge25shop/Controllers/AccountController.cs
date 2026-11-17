@@ -200,5 +200,37 @@ namespace TARge25śhop.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null && await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    var passwordResetLink =
+                        Url.Action("ResetPassword", "Account",
+                        new { userId = user.Id, token = token },
+                        Request.Scheme);
+
+                    var emailDto = new EmailDto
+                    {
+                        To = model.Email,
+                        Subject = "Password reset",
+                        Body =  $"Reset your password at this link <a href='{passwordResetLink}'></a>"
+                    };
+
+                    _emailServices.SendEmail(emailDto);
+
+                    return View("ForgotPasswordConfirmation");
+                }
+                return View("ForgotPasswordConfirmation");
+            }
+            return View(model);
+        }
     }
 }
