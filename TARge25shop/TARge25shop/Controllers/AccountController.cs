@@ -194,5 +194,11 @@ namespace TARge25śhop.Controllers
 
             return View(model);
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
     }
 }
